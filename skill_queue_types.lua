@@ -1,0 +1,2 @@
+--# assume global class CHARACTER_SKILL_QUEUE
+--# assume global class SKILL_QUEUE_MANAGER
