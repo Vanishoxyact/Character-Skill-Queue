@@ -1,8 +1,8 @@
 local CharacterSkillQueue = {} --# assume CharacterSkillQueue: CHARACTER_SKILL_QUEUE
 CharacterSkillQueue.__index = CharacterSkillQueue;
 
---v function(characterCqi: CA_CQI) --> CHARACTER_SKILL_QUEUE
-function CharacterSkillQueue.new(characterCqi)
+--v function(characterCqi: CA_CQI, eventManager: EVENT_MANAGER) --> CHARACTER_SKILL_QUEUE
+function CharacterSkillQueue.new(characterCqi, eventManager)
     local csq = {};
     setmetatable(csq, CharacterSkillQueue);
     --# assume csq: CHARACTER_SKILL_QUEUE

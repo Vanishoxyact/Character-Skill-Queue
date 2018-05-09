@@ -99,12 +99,6 @@ function applyFunctionWhenCharSelected(callback)
     );
 end
 
-applyFunctionWhenCharSelected(
-    function(selectedChar)
-        
-    end
-);
-
 core:add_listener(
     "AddXpToChar",
     "ShortcutTriggered",

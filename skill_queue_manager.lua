@@ -1,7 +1,8 @@
+local SkillQueueModel = require("skill_queue_model");
 local SkillQueueManager = {} --# assume SkillQueueManager: SKILL_QUEUE_MANAGER
 SkillQueueManager.__index = SkillQueueManager;
-SkillQueueManager.characterSkillQueues = {} --: map<CA_CQI, CHARACTER_SKILL_QUEUE>
 SkillQueueManager.characterRanks = {} --: map<CA_CQI, integer>
+SkillQueueManager.model = nil --: SKILL_QUEUE_MODEL
 
 --v function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, skill: string, successCallback: function())
 function SkillQueueManager.allocateSkill(self, character, skill, successCallback)
@@ -13,7 +14,7 @@ function SkillQueueManager.allocateSkill(self, character, skill, successCallback
                 output("Failed to allocate skill: " .. skill);
             else
                 output("Skill allocated");
-                self.characterSkillQueues[character:cqi()]:skilledInto(skill);
+                self.model:getSkillQueueForCharacter(character):skilledInto(skill);
                 successCallback();
             end
         end, 0, "SkillAllocationCallback"
@@ -39,7 +40,7 @@ function SkillQueueManager.processCharRankedUp(self, character, ranks)
     if ranks == 0 then
         return;
     end
-    local characterSkillQueue = self.characterSkillQueues[character:cqi()];
+    local characterSkillQueue = self.model:getSkillQueueForCharacter(character);
     if not characterSkillQueue then
         return;
     end
@@ -89,9 +90,10 @@ function SkillQueueManager.new()
     local sqm = {};
     setmetatable(sqm, SkillQueueManager);
     --# assume sqm: SKILL_QUEUE_MANAGER
+    sqm.model = SkillQueueModel.new();
     sqm:registerForCharRankUp();
     sqm:calculateCharacterRanks();
-    return sqm
+    return sqm;
 end
 
 return {
