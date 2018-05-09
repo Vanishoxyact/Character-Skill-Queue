@@ -1,7 +1,7 @@
 require("skill_queue_util");
-CharacterSkillQueue = require("character_skill_queue");
-SkillQueueManager = require("skill_queue_manager");
-require("skill_queue_ui");
+local SkillQueueManager = require("skill_queue_manager");
+local SkillQueueUi = require("skill_queue_ui");
+local currentUi = nil --: SKILL_QUEUE_UI
 
 function startSkillQueue()
     output("Skill queue started");
@@ -26,5 +26,33 @@ core:add_listener(
         _G.get_faction = get_faction;
         startSkillQueue();
     end,
+    true
+);
+
+core:add_listener(
+    "SkillQueuePanelListener",
+    "PanelOpenedCampaign",
+    function(context) 
+        return context.string == "character_details_panel"; 
+    end,
+    function(context)
+        output("Init skill queue");
+        if not currentUi then
+            currentUi = SkillQueueUi.new();
+        end
+    end, 
+    true
+);
+
+core:add_listener(
+    "SkillQueuePanelListener",
+    "PanelClosedCampaign",
+    function(context) 
+        return context.string == "character_details_panel"; 
+    end,
+    function(context)
+        currentUi:panelClosed();
+        currentUi = nil;
+    end, 
     true
 );
