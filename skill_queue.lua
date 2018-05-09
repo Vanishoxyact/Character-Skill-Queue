@@ -22,8 +22,6 @@ core:add_listener(
         return true;
     end,
     function(context)
-        -- No idea why this is needed
-        _G.get_faction = get_faction;
         startSkillQueue();
     end,
     true

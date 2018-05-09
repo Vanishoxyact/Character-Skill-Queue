@@ -8,6 +8,7 @@ SkillQueueUi.skillQueueButton = nil --: BUTTON
 
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.panelClosed(self)
+    self.viewModel:setQueueExpanded(false);
     self.skillQueueButton:Delete();
     self.skillQueuePanel:Clear();
 end
