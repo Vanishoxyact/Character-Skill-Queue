@@ -3,6 +3,8 @@
 --# assume global class SKILL_QUEUE_MODEL
 --# assume global class SKILL_QUEUE_UI
 --# assume global class SKILL_QUEUE_VIEW_MODEL
+--# assume global class QUEUED_SKILL
+--# assume global class QUEUED_SKILL_CONTAINER
 
 --# type global SKILL_QUEUE_EVENT = 
 --# "QUEUE_EXPANDED_CHANGE"

@@ -2,10 +2,11 @@ require("skill_queue_util");
 local SkillQueueManager = require("skill_queue_manager");
 local SkillQueueUi = require("skill_queue_ui");
 local currentUi = nil --: SKILL_QUEUE_UI
+local skillQueueManager = nil --: SKILL_QUEUE_MANAGER
 
 function startSkillQueue()
     output("Skill queue started");
-    local skillQueueManager = SkillQueueManager.new();
+    skillQueueManager = SkillQueueManager.new();
     local testCqi = 31;
     --# assume testCqi: CA_CQI
     local testQueue = skillQueueManager.model:createCharacterSkillQueue(get_character_by_cqi(testCqi));
@@ -36,7 +37,9 @@ core:add_listener(
     function(context)
         output("Init skill queue");
         if not currentUi then
-            currentUi = SkillQueueUi.new();
+            local testCqi = 31;
+            --# assume testCqi: CA_CQI
+            currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(get_character_by_cqi(testCqi)));
         end
     end, 
     true

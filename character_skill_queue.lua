@@ -21,6 +21,11 @@ function CharacterSkillQueue.getNextSkill(self)
     return self.queuedSkills[1];
 end
 
+--v function(self: CHARACTER_SKILL_QUEUE) --> vector<string>
+function CharacterSkillQueue.getAllSkills(self)
+    return self.queuedSkills;
+end
+
 --v function(self: CHARACTER_SKILL_QUEUE, skillName: string)
 function CharacterSkillQueue.skilledInto(self, skillName)
     removeFromList(self.queuedSkills, skillName);
