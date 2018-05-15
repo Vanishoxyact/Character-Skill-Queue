@@ -52,8 +52,10 @@ core:add_listener(
         return context.string == "character_details_panel"; 
     end,
     function(context)
-        currentUi:panelClosed();
-        currentUi = nil;
+        if currentUi then
+            currentUi:panelClosed();
+            currentUi = nil;
+        end
     end, 
     true
 );

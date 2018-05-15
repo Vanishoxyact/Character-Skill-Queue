@@ -11,6 +11,9 @@ function QueuedSkill.new(skill)
     setmetatable(qs, QueuedSkill);
     --# assume qs: QUEUED_SKILL
     qs.skill = skill;
+    qs.index = nil;
+    qs.charRank = nil;
+    qs.skillRank = nil;
     return qs;
 end
 

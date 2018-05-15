@@ -90,6 +90,7 @@ function SkillQueueManager.new()
     local sqm = {};
     setmetatable(sqm, SkillQueueManager);
     --# assume sqm: SKILL_QUEUE_MANAGER
+    sqm.characterRanks = {};
     sqm.model = SkillQueueModel.new();
     sqm:registerForCharRankUp();
     sqm:calculateCharacterRanks();

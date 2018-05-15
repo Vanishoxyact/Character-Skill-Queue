@@ -7,9 +7,11 @@ QueuedSkillContainer.parentPanel = nil --: CA_UIC
 --v function(self: QUEUED_SKILL_CONTAINER, queuedSkill: QUEUED_SKILL)
 function QueuedSkillContainer.populateContainer(self, queuedSkill)
     local container = self.container;
-    -- TODO update name with rank
-    local skillName = Text.new("QueuedSkillContainer" .. queuedSkill.skill, self.parentPanel, "NORMAL", queuedSkill.skill);
-    container:AddComponent(skillName);
+    local skillName = queuedSkill.skill;
+    local skillRank = queuedSkill.skillRank;
+    local localizedname = effect.get_localised_string("character_skills_localised_name_" .. skillName);
+    local skillNameText = Text.new("QueuedSkillContainer" .. skillName .. skillRank, self.parentPanel, "NORMAL", localizedname .. skillRank);
+    container:AddComponent(skillNameText);
 end
 
 --v function(queuedSkill: QUEUED_SKILL, parentPanel: CA_UIC) --> QUEUED_SKILL_CONTAINER
