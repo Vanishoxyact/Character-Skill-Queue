@@ -6,6 +6,7 @@ SkillQueueUi.viewModel = nil --: SKILL_QUEUE_VIEW_MODEL
 SkillQueueUi.skillsPanel = nil --: CA_UIC
 SkillQueueUi.skillQueuePanel = nil --: CONTAINER
 SkillQueueUi.skillQueueButton = nil --: BUTTON
+SkillQueueUi.queuedSkillToQueuedSkillContainer = {} --: map<QUEUED_SKILL, CONTAINER>
 
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.panelClosed(self)
@@ -59,9 +60,21 @@ end
 function SkillQueueUi.createQueuedSkillsPanel(self)
     local queuedSkillsContainer = Container.new(FlowLayout.VERTICAL);
     for i, queuedSkill in ipairs(self.viewModel.queuedSkills) do
-        local queuedSkillContainer = QueuedSkillContainer.new(queuedSkill, self.skillsPanel);
+        local queuedSkillContainer = QueuedSkillContainer.new(queuedSkill, self.skillsPanel, self.viewModel);
         queuedSkillsContainer:AddComponent(queuedSkillContainer:getContainer());
+        self.queuedSkillToQueuedSkillContainer[queuedSkill] = queuedSkillContainer:getContainer();
     end
+    self.viewModel:RegisterForEvent(
+        "SKILL_QUEUE_UPDATED",
+        function()
+            queuedSkillsContainer.components = {};
+            for i, queuedSkill in ipairs(self.viewModel.queuedSkills) do
+                local queuedSkillContainer = self.queuedSkillToQueuedSkillContainer[queuedSkill];
+                queuedSkillsContainer:AddComponent(queuedSkillContainer);
+            end
+            queuedSkillsContainer:Reposition();
+        end
+    )
     return queuedSkillsContainer;
 end
 
@@ -95,6 +108,7 @@ function SkillQueueUi.new(characterSkillQueue)
     setmetatable(squi, SkillQueueUi);
     --# assume squi: SKILL_QUEUE_UI
     squi.viewModel = SkillQueueViewModel.new(characterSkillQueue);
+    squi.queuedSkillToQueuedSkillContainer = {};
     squi.skillsPanel = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel");
     squi:setUpRegistrations();
     squi:addSkillQueueButton();

@@ -9,6 +9,7 @@ SkillQueueViewModel.skillListWidth = nil --: number
 SkillQueueViewModel.queueExpanded = false --: boolean
 SkillQueueViewModel.characterSkillQueue = nil --: CHARACTER_SKILL_QUEUE
 SkillQueueViewModel.queuedSkills = {} --: vector<QUEUED_SKILL>
+SkillQueueViewModel.queuedSkillsTotal = 0 --: int
 SkillQueueViewModel.currentSkillLevel = {} --: map<string, int>
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL, eventType: SKILL_QUEUE_EVENT, callback: function())
@@ -29,16 +30,15 @@ function SkillQueueViewModel.setupSkillListWidth(self)
     self.skillListWidth = w;
 end
 
---v function(self: SKILL_QUEUE_VIEW_MODEL, skill: string) --> QUEUED_SKILL
-function SkillQueueViewModel.createQueuedSkill(self, skill)
-    local queuedSkill = QueuedSkill.new(skill);
-    queuedSkill.skillRank = self.currentSkillLevel[skill] + 1
-    return queuedSkill;
-end
-
 --v function(self: SKILL_QUEUE_VIEW_MODEL, skill: string) --> (int, int)
 function SkillQueueViewModel.detectSkillLevels(self, skill)
     local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview");
+    -- Util.recurseThroughChildrenApplyingFunction(
+    --     skillList,
+    --     function(child)
+    --         child:SetState("hover");
+    --     end
+    -- )
     local skillNode = find_uicomponent(skillList, skill);
     if not skillNode then
         output("Failed to find skill node: " ..  skill);
@@ -75,8 +75,33 @@ function SkillQueueViewModel.detectSkillLevels(self, skill)
     return currentLevel, maxLevel;
 end
 
+--v function(self: SKILL_QUEUE_VIEW_MODEL, characterSkillQueue: CHARACTER_SKILL_QUEUE, skill: string, index: int) --> int
+function SkillQueueViewModel.calculateSkillRank(self, characterSkillQueue, skill, index)
+    local initialRank = self.currentSkillLevel[skill] or 0;
+    local skillRank = initialRank;
+    local queuedSkills = characterSkillQueue:getAllSkills();
+    for i, queuedSkill in ipairs(queuedSkills) do
+        if i > index then
+            break
+        end
+        if queuedSkill == skill then
+            skillRank = skillRank + 1;
+        end
+    end
+    return skillRank;
+end
+
+--v function(self: SKILL_QUEUE_VIEW_MODEL, skill: string) --> QUEUED_SKILL
+function SkillQueueViewModel.createQueuedSkill(self, skill)
+    self.queuedSkillsTotal = self.queuedSkillsTotal + 1;
+    local queuedSkill = QueuedSkill.new(skill);
+    queuedSkill.id = self.queuedSkillsTotal;
+    return queuedSkill;
+end
+
 --v function(self: SKILL_QUEUE_VIEW_MODEL, characterSkillQueue: CHARACTER_SKILL_QUEUE)
 function SkillQueueViewModel.createQueuedSkills(self, characterSkillQueue)
+    local charCurrentRank = get_character_by_cqi(characterSkillQueue.characterCqi):rank();
     local queuedSkills = characterSkillQueue:getAllSkills();
     for i, skill in ipairs(queuedSkills) do
         local currentLevel, maxLevel = self:detectSkillLevels(skill);
@@ -84,9 +109,55 @@ function SkillQueueViewModel.createQueuedSkills(self, characterSkillQueue)
             self.currentSkillLevel[skill] = currentLevel;
         end
         queuedSkill = self:createQueuedSkill(skill);
+        queuedSkill.skillRank = self:calculateSkillRank(characterSkillQueue, skill, i);
+        queuedSkill.index = i;
+        queuedSkill.charRank = charCurrentRank + i;
         table.insert(self.queuedSkills, queuedSkill);
-        self.currentSkillLevel[skill] = currentLevel + 1;
     end
+end
+
+--v function(self: SKILL_QUEUE_VIEW_MODEL, queuedSkill: QUEUED_SKILL, increase: boolean)
+function SkillQueueViewModel.changeIndexOfQueuedSkill(self, queuedSkill, increase)
+    if increase then
+        queuedSkill:setIndex(queuedSkill.index + 1);
+        queuedSkill:setCharRank(queuedSkill.charRank + 1);
+    else
+        queuedSkill:setIndex(queuedSkill.index - 1);
+        queuedSkill:setCharRank(queuedSkill.charRank - 1);
+    end
+    queuedSkill:setSkillRank(self:calculateSkillRank(self.characterSkillQueue, queuedSkill.skill, queuedSkill.index));
+end
+
+--v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
+function SkillQueueViewModel.moveQueuedSkillUp(self, skillIndex)
+    output("Moving skill up with index: " .. skillIndex);
+    if skillIndex == 1 then
+        return;
+    end
+    self.characterSkillQueue:moveSkillUp(skillIndex);
+    for i, queuedSkill in ipairs(self.queuedSkills) do
+        if i == skillIndex - 1 then
+            self:changeIndexOfQueuedSkill(queuedSkill, true);
+        end
+        if i == skillIndex  then
+            self:changeIndexOfQueuedSkill(queuedSkill, false);
+        end
+    end
+    local queuedSkills = self.queuedSkills;
+    local itemAtIndex = queuedSkills[skillIndex];
+    table.remove(queuedSkills, skillIndex);
+    insertTableIndex(queuedSkills, skillIndex - 1, itemAtIndex);
+    self.eventManager:NotifyEvent("SKILL_QUEUE_UPDATED");
+end
+
+--v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
+function SkillQueueViewModel.moveQueuedSkillDown(self, skillIndex)
+    
+end
+
+--v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
+function SkillQueueViewModel.removeQueuedSkill(self, skillIndex)
+    
 end
 
 --v function(characterSkillQueue: CHARACTER_SKILL_QUEUE) --> SKILL_QUEUE_VIEW_MODEL
@@ -100,7 +171,8 @@ function SkillQueueViewModel.new(characterSkillQueue)
     sqvm.characterSkillQueue = characterSkillQueue;
     sqvm.queuedSkills = {};
     sqvm.currentSkillLevel = {};
-    
+    sqvm.queuedSkillsTotal = 0
+
     sqvm:setupSkillListWidth();
     sqvm:createQueuedSkills(characterSkillQueue);
     return sqvm;

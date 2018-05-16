@@ -31,6 +31,22 @@ function CharacterSkillQueue.skilledInto(self, skillName)
     removeFromList(self.queuedSkills, skillName);
 end
 
+--v function(self: CHARACTER_SKILL_QUEUE, index: int)
+function CharacterSkillQueue.moveSkillUp(self, index)
+    local queuedSkills = self.queuedSkills;
+    local itemAtIndex = queuedSkills[index];
+    table.remove(queuedSkills, index);
+    insertTableIndex(queuedSkills, index - 1, itemAtIndex);
+end
+
+--v function(self: CHARACTER_SKILL_QUEUE, index: int)
+function CharacterSkillQueue.moveSkillDown(self, index)
+    local queuedSkills = self.queuedSkills;
+    local itemAtIndex = queuedSkills[index];
+    table.remove(queuedSkills, index);
+    insertTableIndex(queuedSkills, index + 1, itemAtIndex);
+end
+
 return {
     new = CharacterSkillQueue.new
 }

@@ -4,25 +4,74 @@ QueuedSkillContainer.container = nil --: CONTAINER
 QueuedSkillContainer.queuedSkill = nil --: QUEUED_SKILL
 QueuedSkillContainer.parentPanel = nil --: CA_UIC
 
---v function(self: QUEUED_SKILL_CONTAINER, queuedSkill: QUEUED_SKILL)
-function QueuedSkillContainer.populateContainer(self, queuedSkill)
+--v function(self: QUEUED_SKILL_CONTAINER, queuedSkill: QUEUED_SKILL, viewModel: SKILL_QUEUE_VIEW_MODEL)
+function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
     local container = self.container;
     local skillName = queuedSkill.skill;
     local skillRank = queuedSkill.skillRank;
     local localizedname = effect.get_localised_string("character_skills_localised_name_" .. skillName);
-    local skillNameText = Text.new("QueuedSkillContainer" .. skillName .. skillRank, self.parentPanel, "NORMAL", localizedname .. skillRank);
+    local skillNameText = Text.new("QueuedSkillContainerSkillName" .. queuedSkill.id, self.parentPanel, "NORMAL", localizedname .. skillRank);
     container:AddComponent(skillNameText);
+    local charRankText = Text.new("QueuedSkillContainerCharRankText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.charRank));
+    container:AddComponent(charRankText);
+    local indexText = Text.new("QueuedSkillContainerIndexText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.index));
+    container:AddComponent(indexText);
+    local idText = Text.new("QueuedSkillContainerIdText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.id));
+    container:AddComponent(idText);
+
+    local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/default/advisor_beastmen_2d.png");
+    moveUpButton:RegisterForClick(
+        function(context)
+            viewModel:moveQueuedSkillUp(queuedSkill.index);
+        end
+    );
+    container:AddComponent(moveUpButton);
+
+    local moveDownButton = Button.new("QueuedSkillContainerMoveDownButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/default/advisor_beastmen_2d.png");
+    moveDownButton:RegisterForClick(
+        function(context)
+            viewModel:moveQueuedSkillDown(queuedSkill.index);
+        end
+    );
+    container:AddComponent(moveDownButton);
+
+    local removeButton = Button.new("QueuedSkillContainerRemoveButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/default/advisor_beastmen_2d.png");
+    removeButton:RegisterForClick(
+        function(context)
+            viewModel:removeQueuedSkill(queuedSkill.index);
+        end
+    );
+    container:AddComponent(removeButton);
+
+    queuedSkill:RegisterForEvent(
+        "QUEUED_SKILL_INDEX_CHANGE",
+        function()
+            indexText:SetText(tostring(queuedSkill.index));
+        end
+    );
+    queuedSkill:RegisterForEvent(
+        "QUEUED_SKILL_CHAR_RANK_CHANGE",
+        function()
+            charRankText:SetText(tostring(queuedSkill.charRank));
+        end
+    );
+    queuedSkill:RegisterForEvent(
+        "QUEUED_SKILL_SKILL_RANK_CHANGE",
+        function()
+            skillNameText:SetText(tostring(localizedname .. queuedSkill.skillRank));
+        end
+    );
 end
 
---v function(queuedSkill: QUEUED_SKILL, parentPanel: CA_UIC) --> QUEUED_SKILL_CONTAINER
-function QueuedSkillContainer.new(queuedSkill, parentPanel)
+--v function(queuedSkill: QUEUED_SKILL, parentPanel: CA_UIC, viewModel: SKILL_QUEUE_VIEW_MODEL) --> QUEUED_SKILL_CONTAINER
+function QueuedSkillContainer.new(queuedSkill, parentPanel, viewModel)
     local qsc = {};
     setmetatable(qsc, QueuedSkillContainer);
     --# assume qsc: QUEUED_SKILL_CONTAINER
-    qsc.container = Container.new(FlowLayout.HORIZONTAL);
+    qsc.container = Container.new(FlowLayout.VERTICAL);
     qsc.queuedSkill = queuedSkill;
     qsc.parentPanel = parentPanel;
-    qsc:populateContainer(queuedSkill);
+    qsc:populateContainer(queuedSkill, viewModel);
     return qsc;
 end
 

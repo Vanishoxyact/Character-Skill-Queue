@@ -194,3 +194,8 @@ function spairs(t, order)
         end
     end
 end
+
+--v [NO_CHECK] function(list: vector<WHATEVER>, index: int, value: any)
+function insertTableIndex(list, index, value)
+    table.insert(list, index, value);
+end
