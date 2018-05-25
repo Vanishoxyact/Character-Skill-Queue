@@ -152,12 +152,35 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
 function SkillQueueViewModel.moveQueuedSkillDown(self, skillIndex)
-    
+    if skillIndex == #self.queuedSkills then
+        return;
+    end
+    self.characterSkillQueue:moveSkillDown(skillIndex);
+    for i, queuedSkill in ipairs(self.queuedSkills) do
+        if i == skillIndex + 1 then
+            self:changeIndexOfQueuedSkill(queuedSkill, false);
+        end
+        if i == skillIndex then
+            self:changeIndexOfQueuedSkill(queuedSkill, true);
+        end
+    end
+    local queuedSkills = self.queuedSkills;
+    local itemAtIndex = queuedSkills[skillIndex];
+    table.remove(queuedSkills, skillIndex);
+    insertTableIndex(queuedSkills, skillIndex + 1, itemAtIndex);
+    self.eventManager:NotifyEvent("SKILL_QUEUE_UPDATED");
 end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
 function SkillQueueViewModel.removeQueuedSkill(self, skillIndex)
-    
+    self.characterSkillQueue:removeSkill(skillIndex);
+    table.remove(self.queuedSkills, skillIndex);
+    for i, queuedSkill in ipairs(self.queuedSkills) do
+        if i >= skillIndex then
+            self:changeIndexOfQueuedSkill(queuedSkill, false);
+        end
+    end
+    self.eventManager:NotifyEvent("SKILL_QUEUE_UPDATED");
 end
 
 --v function(characterSkillQueue: CHARACTER_SKILL_QUEUE) --> SKILL_QUEUE_VIEW_MODEL

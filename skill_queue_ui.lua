@@ -56,25 +56,46 @@ function SkillQueueUi.updateSkillQueuePanel(self)
     skillQueuePanel:Reposition();
 end
 
+--v function(self: SKILL_QUEUE_UI) --> map<QUEUED_SKILL, CONTAINER>
+function SkillQueueUi.calculateMissingSkillQueueContainers(self)
+    local missingSkillQueueContrainers = {} --: map<QUEUED_SKILL, CONTAINER>
+    for queuedSkill, container in pairs(self.queuedSkillToQueuedSkillContainer) do
+        if not listContains(self.viewModel.queuedSkills, queuedSkill) then
+            missingSkillQueueContrainers[queuedSkill] = container;
+        end
+    end
+    return missingSkillQueueContrainers;
+end
+
+--v function(self: SKILL_QUEUE_UI, queuedSkillsContainer: CONTAINER)
+function SkillQueueUi.updateQueuedSkillPanel(self, queuedSkillsContainer)
+    queuedSkillsContainer.components = {};
+    for i, queuedSkill in ipairs(self.viewModel.queuedSkills) do
+        local queuedSkillContainer = self.queuedSkillToQueuedSkillContainer[queuedSkill];
+        if not queuedSkillContainer then
+            queuedSkillContainer = QueuedSkillContainer.new(queuedSkill, self.skillsPanel, self.viewModel):getContainer();
+            self.queuedSkillToQueuedSkillContainer[queuedSkill] = queuedSkillContainer;
+        end
+        queuedSkillsContainer:AddComponent(queuedSkillContainer);
+    end
+    local missingSkillQueueContrainers = self:calculateMissingSkillQueueContainers();
+    for queuedSkill, missingSkillQueueContainer in pairs(missingSkillQueueContrainers) do
+        missingSkillQueueContainer:Clear();
+        self.queuedSkillToQueuedSkillContainer[queuedSkill] = nil;
+    end
+    queuedSkillsContainer:Reposition();
+end
+
 --v function(self: SKILL_QUEUE_UI) --> CONTAINER
 function SkillQueueUi.createQueuedSkillsPanel(self)
     local queuedSkillsContainer = Container.new(FlowLayout.VERTICAL);
-    for i, queuedSkill in ipairs(self.viewModel.queuedSkills) do
-        local queuedSkillContainer = QueuedSkillContainer.new(queuedSkill, self.skillsPanel, self.viewModel);
-        queuedSkillsContainer:AddComponent(queuedSkillContainer:getContainer());
-        self.queuedSkillToQueuedSkillContainer[queuedSkill] = queuedSkillContainer:getContainer();
-    end
     self.viewModel:RegisterForEvent(
         "SKILL_QUEUE_UPDATED",
         function()
-            queuedSkillsContainer.components = {};
-            for i, queuedSkill in ipairs(self.viewModel.queuedSkills) do
-                local queuedSkillContainer = self.queuedSkillToQueuedSkillContainer[queuedSkill];
-                queuedSkillsContainer:AddComponent(queuedSkillContainer);
-            end
-            queuedSkillsContainer:Reposition();
+            self:updateQueuedSkillPanel(queuedSkillsContainer);
         end
     )
+    self:updateQueuedSkillPanel(queuedSkillsContainer);
     return queuedSkillsContainer;
 end
 

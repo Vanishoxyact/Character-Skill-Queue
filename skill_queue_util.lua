@@ -151,7 +151,7 @@ core:add_listener(
     true
 );
 
---v function(list: vector<string>, value: string) --> boolean
+--v function(list: vector<WHATEVER>, value: WHATEVER) --> boolean
 function listContains(list, value)
     for i, listValue in ipairs(list) do
         if listValue == value then

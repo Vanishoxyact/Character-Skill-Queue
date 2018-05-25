@@ -19,21 +19,22 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
     local idText = Text.new("QueuedSkillContainerIdText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.id));
     container:AddComponent(idText);
 
-    local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/default/advisor_beastmen_2d.png");
+    local buttonsContainer = Container.new(FlowLayout.HORIZONTAL);
+    local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/warhammer2/slider_vertical_top_active.png");
     moveUpButton:RegisterForClick(
         function(context)
             viewModel:moveQueuedSkillUp(queuedSkill.index);
         end
     );
-    container:AddComponent(moveUpButton);
+    buttonsContainer:AddComponent(moveUpButton);
 
-    local moveDownButton = Button.new("QueuedSkillContainerMoveDownButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/default/advisor_beastmen_2d.png");
+    local moveDownButton = Button.new("QueuedSkillContainerMoveDownButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/warhammer2/slider_vertical_bottom_active.png");
     moveDownButton:RegisterForClick(
         function(context)
             viewModel:moveQueuedSkillDown(queuedSkill.index);
         end
     );
-    container:AddComponent(moveDownButton);
+    buttonsContainer:AddComponent(moveDownButton);
 
     local removeButton = Button.new("QueuedSkillContainerRemoveButton" .. queuedSkill.id, self.parentPanel, "CIRCULAR", "ui/skins/default/advisor_beastmen_2d.png");
     removeButton:RegisterForClick(
@@ -41,7 +42,8 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
             viewModel:removeQueuedSkill(queuedSkill.index);
         end
     );
-    container:AddComponent(removeButton);
+    buttonsContainer:AddComponent(removeButton);
+    container:AddComponent(buttonsContainer);
 
     queuedSkill:RegisterForEvent(
         "QUEUED_SKILL_INDEX_CHANGE",

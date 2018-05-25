@@ -47,6 +47,11 @@ function CharacterSkillQueue.moveSkillDown(self, index)
     insertTableIndex(queuedSkills, index + 1, itemAtIndex);
 end
 
+--v function(self: CHARACTER_SKILL_QUEUE, index: int)
+function CharacterSkillQueue.removeSkill(self, index)
+    table.remove(self.queuedSkills, index);
+end
+
 return {
     new = CharacterSkillQueue.new
 }
