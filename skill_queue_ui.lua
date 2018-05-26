@@ -1,17 +1,21 @@
 local SkillQueueViewModel = require("skill_queue_view_model")
 local QueuedSkillContainer = require("queued_skill_container")
+local SkillQueuer = require("skill_queuer")
 local SkillQueueUi = {} --# assume SkillQueueUi: SKILL_QUEUE_UI
 SkillQueueUi.__index = SkillQueueUi;
 SkillQueueUi.viewModel = nil --: SKILL_QUEUE_VIEW_MODEL
+SkillQueueUi.skillQueuer = nil --: SKILL_QUEUER
 SkillQueueUi.skillsPanel = nil --: CA_UIC
 SkillQueueUi.skillQueuePanel = nil --: CONTAINER
 SkillQueueUi.skillQueueButton = nil --: BUTTON
+SkillQueueUi.skillQueuerButton = nil --: BUTTON
 SkillQueueUi.queuedSkillToQueuedSkillContainer = {} --: map<QUEUED_SKILL, CONTAINER>
 
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.panelClosed(self)
     self.viewModel:setQueueExpanded(false);
     self.skillQueueButton:Delete();
+    self.skillQueuerButton:Delete();
     self.skillQueuePanel:Clear();
 end
 
@@ -24,6 +28,22 @@ function SkillQueueUi.addSkillQueueButton(self)
         end
     );
     self.skillQueueButton = skillQueueButton;
+end
+
+--v function(self: SKILL_QUEUE_UI)
+function SkillQueueUi.addSkillQueuerButton(self)
+    local skillQueuerButton = Button.new("skillQueuerButton", self.skillsPanel, "CIRCULAR_TOGGLE", "ui/skins/default/advisor_beastmen_2d.png");
+    skillQueuerButton:MoveTo(300, 300);
+    skillQueuerButton:RegisterForClick(
+        function(context)
+            if not skillQueuerButton:IsSelected() then
+                self.skillQueuer:highightQueueableSkills();
+            else
+                self.skillQueuer:resetSkillHighlights();
+            end
+        end
+    );
+    self.skillQueuerButton = skillQueuerButton;
 end
 
 --v function(self: SKILL_QUEUE_UI)
@@ -129,10 +149,12 @@ function SkillQueueUi.new(characterSkillQueue)
     setmetatable(squi, SkillQueueUi);
     --# assume squi: SKILL_QUEUE_UI
     squi.viewModel = SkillQueueViewModel.new(characterSkillQueue);
+    squi.skillQueuer = SkillQueuer.new(function(skill) end);
     squi.queuedSkillToQueuedSkillContainer = {};
     squi.skillsPanel = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel");
     squi:setUpRegistrations();
     squi:addSkillQueueButton();
+    squi:addSkillQueuerButton();
     squi:createSkillQueuePanel();
     return squi;
 end
