@@ -3,17 +3,6 @@ SkillQueuer.__index = SkillQueuer;
 SkillQueuer.skillSelectedCallback = nil --: function(string)
 SkillQueuer.defaultSkillCardState = {} --: map<CA_UIC, BUTTON_STATE>
 
---v function(func: function) --> any
-function safeCall(func)
-    output("safeCall start");
-    local status, result = pcall(func)
-    if not status then
-        output(tostring(result))
-    end
-    output("safeCall end");
-    return result;
-end
-
 --v function(self: SKILL_QUEUER) --> vector<CA_UIC>
 function SkillQueuer.findSkillCards(self)
     local skillCards = {} --: vector<CA_UIC>
@@ -47,28 +36,20 @@ end
 function SkillQueuer.highightQueueableSkills(self)
     -- available, locked, hover
     output("highightQueueableSkills");
-    safeCall(
-        function()
-            local skillCards = self:findSkillCards();
-            for i, skillCard in ipairs(skillCards) do
-                output("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
-                self.defaultSkillCardState[skillCard] = skillCard:CurrentState();
-                skillCard:SetState("available");
-            end
-        end
-    );
+    local skillCards = self:findSkillCards();
+    for i, skillCard in ipairs(skillCards) do
+        output("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
+        self.defaultSkillCardState[skillCard] = skillCard:CurrentState();
+        skillCard:SetState("available");
+    end
 end
 
 --v function(self: SKILL_QUEUER)
 function SkillQueuer.resetSkillHighlights(self)
     output("resetSkillHighlights");
-    safeCall(
-        function()
-            for skillCard, state in pairs(self.defaultSkillCardState) do
-                skillCard:SetState(state);
-            end
-        end
-    );
+    for skillCard, state in pairs(self.defaultSkillCardState) do
+        skillCard:SetState(state);
+    end
 end
 
 --v function(skillSelectedCallback: function(string)) --> SKILL_QUEUER
