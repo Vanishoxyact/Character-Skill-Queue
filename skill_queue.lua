@@ -101,6 +101,7 @@ core:add_listener(
         if currentUi then
             currentUi:panelClosed(false);
             currentUi = nil;
+            selectedChar = nil;
         end
     end, 
     true
