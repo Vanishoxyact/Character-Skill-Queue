@@ -71,16 +71,15 @@ local currentChar = nil --: CA_CHAR
 applyFunctionWhenCharSelected(
     function(selectedChar)
         if selectedChar == currentChar then
-            return
+            return;
+        end
+        if not find_uicomponent(core:get_ui_root(), "character_details_panel") then
+            return;
         end
         currentChar = selectedChar;
         if not currentUi then
             cm:callback(
                 function()
-                    -- For some reason not working
-                    if not find_uicomponent(core:get_ui_root(), "character_details_panel") then
-                        return;
-                    end
                     output("Init skill queue");
                     currentUi = SkillQueueUi.new(skillQueueManager.model:getOrCreateCharacterSkillQueue(selectedChar));
                 end, 0, "SkillQueueUiCreator"
