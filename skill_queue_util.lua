@@ -26,9 +26,11 @@ function getCharFromSelectedForceAtIndex(index)
     local selectedLord = get_character_by_cqi(cqi);
 
     local charType = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "character_details_subpanel", "frame", "details", "info_list", "dy_type");
-    local charTypeText = charType:GetStateText();
-    if string.match(charTypeText, "Lord") then
-        return selectedLord;
+    if charType then
+        local charTypeText = charType:GetStateText();
+        if string.match(charTypeText, "Lord") then
+            return selectedLord;
+        end
     end
 
     output("C");
@@ -76,7 +78,9 @@ function applyFunctionWhenCharSelected(callback)
         end,
         function(context)
             local selectedChar = calculateSelectedCharacter();
-            callback(selectedChar);
+            if selectedChar then
+                callback(selectedChar);
+            end
         end, 
         true
     );
@@ -91,7 +95,9 @@ function applyFunctionWhenCharSelected(callback)
             cm:callback(
                 function()
                     local selectedChar = calculateSelectedCharacter();
-                    callback(selectedChar);
+                    if selectedChar then
+                        callback(selectedChar);
+                    end
                 end, 0, "asdasdsad"
             );
         end,
