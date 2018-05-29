@@ -11,6 +11,7 @@ SkillQueueUi.skillQueuePanel = nil --: CONTAINER
 SkillQueueUi.skillQueueButton = nil --: TEXT_BUTTON
 SkillQueueUi.skillQueuerButton = nil --: TEXT_BUTTON
 SkillQueueUi.queuedSkillToQueuedSkillContainer = {} --: map<QUEUED_SKILL, CONTAINER>
+SkillQueueUi.markedSkills = {} --: vector<CA_UIC>
 
 --v function(self: SKILL_QUEUE_UI, switched: boolean)
 function SkillQueueUi.panelClosed(self, switched)
@@ -122,6 +123,24 @@ function SkillQueueUi.updateQueuedSkillPanel(self, queuedSkillsContainer)
     queuedSkillsContainer:Reposition();
 end
 
+--v function(self: SKILL_QUEUE_UI)
+function SkillQueueUi.markSelectedSkills(self)
+    for i, markedSkill in ipairs(self.markedSkills) do
+        markedSkill:SetState("locked");
+        markedSkill:SetOpacity(255);
+    end
+    self.markedSkills = {};
+    if self.viewModel.queueExpanded then
+        local queuedSkills = self.viewModel.queuedSkills;
+        for i, queuedSkill in ipairs(queuedSkills) do
+            local skillRankUic = self.viewModel:getUicForSkillRank(queuedSkill.skill, queuedSkill.skillRank);
+            skillRankUic:SetState("active");
+            skillRankUic:SetOpacity(150);
+            table.insert(self.markedSkills, skillRankUic);
+        end
+    end
+end
+
 --v function(self: SKILL_QUEUE_UI) --> CONTAINER
 function SkillQueueUi.createQueuedSkillsPanel(self)
     local queuedSkillsContainer = Container.new(FlowLayout.VERTICAL);
@@ -130,6 +149,7 @@ function SkillQueueUi.createQueuedSkillsPanel(self)
         function()
             self:updateQueuedSkillPanel(queuedSkillsContainer);
             self.skillQueuePanel:Reposition();
+            self:markSelectedSkills();
         end
     )
     self:updateQueuedSkillPanel(queuedSkillsContainer);
@@ -143,11 +163,19 @@ function SkillQueueUi.createSkillQueuePanel(self)
     local skillQueuePanelDivider = Image.new("skillQueuePanelDivider", self.skillsPanel, "ui/skins/default/separator_line.png");
     skillQueuePanelDivider:Resize(200, 2);
     skillQueuePanel:AddComponent(skillQueuePanelDivider);
-    local queuedSkillsPanel = self:createQueuedSkillsPanel();
-    skillQueuePanel:AddComponent(queuedSkillsPanel);
-    skillQueuePanel:SetVisible(false);
+
     local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview");
-    skillQueuePanel:PositionRelativeTo(skillList, skillList:Bounds() - self.viewModel.skillQueueWidth, 0);
+    local skillListW, skillListH = skillList:Bounds();
+    local outerPanel = Container.new(FlowLayout.HORIZONTAL);
+    local skillQueuePanelSideDivider = Image.new("skillQueuePanelSideDivider", self.skillsPanel, "ui/skins/default/separator_line.png");
+    skillQueuePanelSideDivider:Resize(4, skillListH -  50);
+    outerPanel:AddComponent(skillQueuePanelSideDivider);
+    local queuedSkillsPanel = self:createQueuedSkillsPanel();
+    outerPanel:AddComponent(queuedSkillsPanel);
+    skillQueuePanel:AddComponent(outerPanel);
+
+    skillQueuePanel:SetVisible(false);
+    skillQueuePanel:PositionRelativeTo(skillList, skillListW - self.viewModel.skillQueueWidth, 0);
     self.skillQueuePanel = skillQueuePanel;
     self:updateSkillQueuePanel();
 end
@@ -160,6 +188,7 @@ function SkillQueueUi.setUpRegistrations(self)
             self:resizeSkillList();
             self:updateSkillQueuePanel();
             self.skillQueuerButton:SetState("active");
+            self:markSelectedSkills();
         end
     );
 end
@@ -171,6 +200,7 @@ function SkillQueueUi.new(characterSkillQueue)
     setmetatable(squi, SkillQueueUi);
     --# assume squi: SKILL_QUEUE_UI
     squi.viewModel = SkillQueueViewModel.new(characterSkillQueue);
+    squi.markedSkills = {};
     squi.skillQueuer = SkillQueuer.new(
         function(skill) 
             squi.viewModel:queueSkill(skill);

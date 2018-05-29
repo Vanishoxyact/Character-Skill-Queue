@@ -1,8 +1,10 @@
 Disallow queuing if skill points > 0
+Issue with current skill level calc if skill points spent
 UI
 Rank calculation errors for new campaign
 Persistence
 Error if cant apply skill
+Change queuer to use model
 
 Completed
 Dont add if higher than max rank

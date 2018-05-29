@@ -218,6 +218,13 @@ function SkillQueueViewModel.queueSkill(self, skill)
     self.eventManager:NotifyEvent("SKILL_QUEUE_UPDATED");
 end
 
+--v function(self: SKILL_QUEUE_VIEW_MODEL, skill: string, rank: int) --> CA_UIC
+function SkillQueueViewModel.getUicForSkillRank(self, skill, rank)
+    local skillCard = self.skillCards[skill];
+    local skillLevelParent = find_uicomponent(skillCard, "level_parent");
+    return find_uicomponent(skillLevelParent, "level" .. rank);
+end
+
 --v function(characterSkillQueue: CHARACTER_SKILL_QUEUE) --> SKILL_QUEUE_VIEW_MODEL
 function SkillQueueViewModel.new(characterSkillQueue)
     local sqvm = {};

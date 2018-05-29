@@ -15,6 +15,9 @@ function QueuedSkillContainer.createCharacterRankContainer(self)
 
     local characterRankNumberContainer = Container.new(FlowLayout.HORIZONTAL);
     characterRankNumberContainer:AddGap(characterRankFrame:Width() / 2 - 10)
+    if queuedSkill.charRank < 10 then
+        characterRankNumberContainer:AddGap(3);
+    end
     local characterRankNumber = Text.new("QueuedSkillContainercharacterRankNumber" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.charRank));
     characterRankNumberContainer:AddComponent(characterRankNumber);
     characterRankContainer:AddComponent(characterRankNumberContainer);
@@ -49,6 +52,7 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
 
     local buttonsContainer = Container.new(FlowLayout.HORIZONTAL);
     local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/icon_toggle_vertical_panel_flipped.png");
+    moveUpButton:Resize(25, 25);
     moveUpButton:RegisterForClick(
         function(context)
             viewModel:moveQueuedSkillUp(queuedSkill.index);
@@ -57,6 +61,7 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
     buttonsContainer:AddComponent(moveUpButton);
 
     local moveDownButton = Button.new("QueuedSkillContainerMoveDownButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/icon_toggle_vertical_panel.png");
+    moveDownButton:Resize(25, 25);
     moveDownButton:RegisterForClick(
         function(context)
             viewModel:moveQueuedSkillDown(queuedSkill.index);
@@ -65,6 +70,7 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
     buttonsContainer:AddComponent(moveDownButton);
 
     local removeButton = Button.new("QueuedSkillContainerRemoveButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/icon_cross.png");
+    removeButton:Resize(25, 25);
     removeButton:RegisterForClick(
         function(context)
             viewModel:removeQueuedSkill(queuedSkill.index);
