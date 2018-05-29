@@ -133,24 +133,6 @@ core:add_listener(
 --     true
 -- );
 
-core:add_listener(
-    "CustomLordsSkillasdasdHider",
-    "PanelOpenedCampaign",
-    function(context) 
-        return context.string == "character_details_panel"; 
-    end,
-    function(context)
-        local skillChain = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview", "list_clip", "list_box", "chain1", "chain");
-        Util.recurseThroughChildrenApplyingFunction(
-            skillChain,
-            function(child)
-                output("Child tooltip : " .. child:Id() .. " | " .. child:GetTooltipText());
-            end
-        );
-    end, 
-    true
-);
-
 --v function(list: vector<WHATEVER>, value: WHATEVER) --> boolean
 function listContains(list, value)
     for i, listValue in ipairs(list) do
