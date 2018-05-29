@@ -1,7 +1,6 @@
 Disallow queuing if skill points > 0
 UI
 Rank calculation errors for new campaign
-Remove quest skills
 Persistence
 Error if cant apply skill
 
@@ -9,3 +8,4 @@ Completed
 Dont add if higher than max rank
 Error getting char type for agents on char selected
 Issues showing buttons for lords when clicking skill button
+Remove quest skills

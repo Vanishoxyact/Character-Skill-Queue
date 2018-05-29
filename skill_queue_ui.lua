@@ -1,5 +1,6 @@
 local SkillQueueViewModel = require("skill_queue_view_model")
 local QueuedSkillContainer = require("queued_skill_container")
+local SkillValidator = require("skill_validator")
 local SkillQueuer = require("skill_queuer")
 local SkillQueueUi = {} --# assume SkillQueueUi: SKILL_QUEUE_UI
 SkillQueueUi.__index = SkillQueueUi;
@@ -158,7 +159,7 @@ function SkillQueueUi.new(characterSkillQueue)
     squi.skillQueuer = SkillQueuer.new(
         function(skill) 
             squi.viewModel:queueSkill(skill);
-        end
+        end, SkillValidator.new(squi.viewModel)
     );
     squi.queuedSkillToQueuedSkillContainer = {};
     squi.skillsPanel = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel");

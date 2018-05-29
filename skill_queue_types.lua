@@ -6,6 +6,7 @@
 --# assume global class QUEUED_SKILL
 --# assume global class QUEUED_SKILL_CONTAINER
 --# assume global class SKILL_QUEUER
+--# assume global class SKILL_VALIDATOR
 
 --# type global SKILL_QUEUE_EVENT = 
 --# "QUEUE_EXPANDED_CHANGE" |

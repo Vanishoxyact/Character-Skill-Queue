@@ -2,6 +2,7 @@ local SkillQueuer = {} --# assume SkillQueuer: SKILL_QUEUER
 SkillQueuer.__index = SkillQueuer;
 SkillQueuer.skillSelectedCallback = nil --: function(string)
 SkillQueuer.defaultSkillCardState = {} --: map<CA_UIC, BUTTON_STATE>
+SkillQueuer.skillValidator = nil --: SKILL_VALIDATOR
 
 --v function(self: SKILL_QUEUER) --> vector<CA_UIC>
 function SkillQueuer.findSkillCards(self)
@@ -32,6 +33,12 @@ function SkillQueuer.findSkillCards(self)
     return skillCards;
 end
 
+--v function(self: SKILL_QUEUER, skillCard: CA_UIC) --> string
+function SkillQueuer.getSkillForCard(self, skillCard)
+    local cardParent = UIComponent(skillCard:Parent());
+    return cardParent:Id();
+end
+
 --v function(self: SKILL_QUEUER)
 function SkillQueuer.registerForSkillCardClick(self)
     core:add_listener(
@@ -45,8 +52,7 @@ function SkillQueuer.registerForSkillCardClick(self)
         end,
         function(context)
             local clickedCard = UIComponent(context.component);
-            local cardParent = UIComponent(clickedCard:Parent());
-            self.skillSelectedCallback(cardParent:Id());
+            self.skillSelectedCallback(self:getSkillForCard(clickedCard));
         end,
         true
     );
@@ -58,7 +64,12 @@ function SkillQueuer.highightQueueableSkills(self)
     for i, skillCard in ipairs(skillCards) do
         output("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
         self.defaultSkillCardState[skillCard] = skillCard:CurrentState();
-        skillCard:SetState("available");
+        local skill = self:getSkillForCard(skillCard);
+        if self.skillValidator:canUnlockSkill(skill) then
+            skillCard:SetState("available");
+        else
+            skillCard:SetState("locked");
+        end
     end
     self:registerForSkillCardClick();
 end
@@ -71,13 +82,14 @@ function SkillQueuer.resetSkillHighlights(self)
     core:remove_listener("SkillCardClickListener");
 end
 
---v function(skillSelectedCallback: function(string)) --> SKILL_QUEUER
-function SkillQueuer.new(skillSelectedCallback)
+--v function(skillSelectedCallback: function(string), skillValidator: SKILL_VALIDATOR) --> SKILL_QUEUER
+function SkillQueuer.new(skillSelectedCallback, skillValidator)
     local sq = {};
     setmetatable(sq, SkillQueuer);
     --# assume sq: SKILL_QUEUER
     sq.skillSelectedCallback = skillSelectedCallback;
     sq.defaultSkillCardState = {};
+    sq.skillValidator = skillValidator;
     return sq;
 end
 
