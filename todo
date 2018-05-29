@@ -1,0 +1,9 @@
+Disallow queuing if skill points > 0
+UI
+Rank calculation errors for new campaign
+Error getting char type for agents on char selected
+Remove quest skills
+Persistence
+Dont add if higher than max rank
+Error if cant apply skill
+Issues showing buttons for lords when clicking skill button
