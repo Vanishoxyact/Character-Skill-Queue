@@ -7,13 +7,13 @@ local skillQueueManager = nil --: SKILL_QUEUE_MANAGER
 function startSkillQueue()
     output("Skill queue started");
     skillQueueManager = SkillQueueManager.new();
-    local testCqi = 31;
-    --# assume testCqi: CA_CQI
-    local testQueue = skillQueueManager.model:createCharacterSkillQueue(get_character_by_cqi(testCqi));
-    testQueue:addSkillToQueue("wh2_main_skill_hef_noble_unique_combat");
-    testQueue:addSkillToQueue("wh2_main_skill_hef_combat_valour_of_ages");
-    testQueue:addSkillToQueue("wh2_main_skill_hef_combat_valour_of_ages");
-    testQueue:addSkillToQueue("wh_main_skill_all_all_self_hard_to_hit");
+    -- local testCqi = 31;
+    -- --# assume testCqi: CA_CQI
+    -- local testQueue = skillQueueManager.model:createCharacterSkillQueue(get_character_by_cqi(testCqi));
+    -- testQueue:addSkillToQueue("wh2_main_skill_hef_noble_unique_combat");
+    -- testQueue:addSkillToQueue("wh2_main_skill_hef_combat_valour_of_ages");
+    -- testQueue:addSkillToQueue("wh2_main_skill_hef_combat_valour_of_ages");
+    -- testQueue:addSkillToQueue("wh_main_skill_all_all_self_hard_to_hit");
 end
 
 core:add_listener(
@@ -101,7 +101,7 @@ core:add_listener(
         if currentUi then
             currentUi:panelClosed(false);
             currentUi = nil;
-            selectedChar = nil;
+            currentChar = nil;
         end
     end, 
     true

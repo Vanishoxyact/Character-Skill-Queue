@@ -82,6 +82,11 @@ function SkillQueuer.resetSkillHighlights(self)
     core:remove_listener("SkillCardClickListener");
 end
 
+--v function(self: SKILL_QUEUER)
+function SkillQueuer.resetDefaultStates(self)
+    self.defaultSkillCardState ={};
+end
+
 --v function(skillSelectedCallback: function(string), skillValidator: SKILL_VALIDATOR) --> SKILL_QUEUER
 function SkillQueuer.new(skillSelectedCallback, skillValidator)
     local sq = {};

@@ -8,26 +8,33 @@ SkillQueueUi.viewModel = nil --: SKILL_QUEUE_VIEW_MODEL
 SkillQueueUi.skillQueuer = nil --: SKILL_QUEUER
 SkillQueueUi.skillsPanel = nil --: CA_UIC
 SkillQueueUi.skillQueuePanel = nil --: CONTAINER
-SkillQueueUi.skillQueueButton = nil --: BUTTON
-SkillQueueUi.skillQueuerButton = nil --: BUTTON
+SkillQueueUi.skillQueueButton = nil --: TEXT_BUTTON
+SkillQueueUi.skillQueuerButton = nil --: TEXT_BUTTON
 SkillQueueUi.queuedSkillToQueuedSkillContainer = {} --: map<QUEUED_SKILL, CONTAINER>
 
 --v function(self: SKILL_QUEUE_UI, switched: boolean)
 function SkillQueueUi.panelClosed(self, switched)
-    self.viewModel:setQueueExpanded(false);
     self.skillQueueButton:Delete();
-    self.skillQueuerButton:Delete();
     self.skillQueuePanel:Clear();
     if not switched then
         self.skillQueuer:resetSkillHighlights();
     else
         core:remove_listener("SkillCardClickListener");
     end
+    self.skillQueuer:resetDefaultStates();
+    self.viewModel:setQueueExpanded(false);
 end
 
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.addSkillQueueButton(self)
-    local skillQueueButton = Button.new("skillQueueButton", self.skillsPanel, "CIRCULAR_TOGGLE", "ui/skins/default/advisor_beastmen_2d.png");
+    local skillQueueButton = TextButton.new("skillQueueButton", self.skillsPanel, "TEXT_TOGGLE_SMALL", "Queue Skills");
+    skillQueueButton:Resize(200, skillQueueButton:Height());
+    local statsResetHolder = find_uicomponent(self.skillsPanel, "stats_reset_holder");
+    local x, y = statsResetHolder:Position();
+    local w, h = statsResetHolder:Bounds();
+    local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview");
+    skillQueueButton:PositionRelativeTo(skillList, skillList:Bounds() - skillQueueButton:Width(), 0);
+    skillQueueButton:MoveTo(skillQueueButton:XPos(), y + h );
     skillQueueButton:RegisterForClick(
         function(context)
             self.viewModel:setQueueExpanded(not self.viewModel.queueExpanded);
@@ -38,8 +45,8 @@ end
 
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.addSkillQueuerButton(self)
-    local skillQueuerButton = Button.new("skillQueuerButton", self.skillsPanel, "CIRCULAR_TOGGLE", "ui/skins/default/advisor_beastmen_2d.png");
-    skillQueuerButton:MoveTo(300, 300);
+    local skillQueuerButton = TextButton.new("skillQueuerButton", self.skillsPanel, "TEXT_TOGGLE_SMALL", "Select skills...");
+    skillQueuerButton:Resize(200, skillQueuerButton:Height());
     skillQueuerButton:RegisterForClick(
         function(context)
             if not skillQueuerButton:IsSelected() then
@@ -49,6 +56,8 @@ function SkillQueueUi.addSkillQueuerButton(self)
             end
         end
     );
+    skillQueuerButton:SetVisible(false);
+    self.skillQueuePanel:AddComponent(skillQueuerButton);
     self.skillQueuerButton = skillQueuerButton;
 end
 
@@ -77,6 +86,7 @@ function SkillQueueUi.updateSkillQueuePanel(self)
         skillQueuePanel:SetVisible(self.viewModel.queueExpanded);
     end
     if not self.viewModel.queueExpanded then
+        self.skillQueuer:resetSkillHighlights();
         return;
     end
     skillQueuePanel:Reposition();
@@ -119,6 +129,7 @@ function SkillQueueUi.createQueuedSkillsPanel(self)
         "SKILL_QUEUE_UPDATED",
         function()
             self:updateQueuedSkillPanel(queuedSkillsContainer);
+            self.skillQueuePanel:Reposition();
         end
     )
     self:updateQueuedSkillPanel(queuedSkillsContainer);
@@ -128,14 +139,17 @@ end
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.createSkillQueuePanel(self)
     local skillQueuePanel = Container.new(FlowLayout.VERTICAL);
-    local title = Text.new("skillQueuePanelTitle", self.skillsPanel, "HEADER", "Skill Queue");
-    skillQueuePanel:AddComponent(title);
+    skillQueuePanel:AddGap(20);
+    local skillQueuePanelDivider = Image.new("skillQueuePanelDivider", self.skillsPanel, "ui/skins/default/separator_line.png");
+    skillQueuePanelDivider:Resize(200, 2);
+    skillQueuePanel:AddComponent(skillQueuePanelDivider);
     local queuedSkillsPanel = self:createQueuedSkillsPanel();
     skillQueuePanel:AddComponent(queuedSkillsPanel);
     skillQueuePanel:SetVisible(false);
     local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview");
     skillQueuePanel:PositionRelativeTo(skillList, skillList:Bounds() - self.viewModel.skillQueueWidth, 0);
     self.skillQueuePanel = skillQueuePanel;
+    self:updateSkillQueuePanel();
 end
 
 --v function(self: SKILL_QUEUE_UI)
@@ -145,6 +159,7 @@ function SkillQueueUi.setUpRegistrations(self)
         function()
             self:resizeSkillList();
             self:updateSkillQueuePanel();
+            self.skillQueuerButton:SetState("active");
         end
     );
 end
@@ -165,8 +180,8 @@ function SkillQueueUi.new(characterSkillQueue)
     squi.skillsPanel = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel");
     squi:setUpRegistrations();
     squi:addSkillQueueButton();
-    squi:addSkillQueuerButton();
     squi:createSkillQueuePanel();
+    squi:addSkillQueuerButton();
     return squi;
 end
 
