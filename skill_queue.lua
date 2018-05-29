@@ -28,21 +28,68 @@ core:add_listener(
     true
 );
 
-core:add_listener(
-    "SkillQueuePanelListener",
-    "PanelOpenedCampaign",
-    function(context) 
-        return context.string == "character_details_panel"; 
-    end,
-    function(context)
-        output("Init skill queue");
-        if not currentUi then
-            local testCqi = 31;
-            --# assume testCqi: CA_CQI
-            currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(get_character_by_cqi(testCqi)));
+-- core:add_listener(
+--     "SkillQueuePanelListener",
+--     "PanelOpenedCampaign",
+--     function(context) 
+--         return context.string == "character_details_panel"; 
+--     end,
+--     function(context)
+--         cm:callback(
+--             function()
+--                 output("Init skill queue");
+--                 if not currentUi then
+--                     local testCqi = 31;
+--                     --# assume testCqi: CA_CQI
+--                     currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(get_character_by_cqi(testCqi)));
+--                 end
+--             end, 0, "SkillQueueUiCreator"
+--         )
+--     end, 
+--     true
+-- );
+
+-- core:add_listener(
+--     "SkillQueueCharacterSelectedListener",
+--     "CharacterSelected",
+--     function(context) 
+--         return true;
+--     end,
+--     function(context)
+--         if currentUi then
+--             currentUi:panelClosed();
+--             local testCqi = 31;
+--             --# assume testCqi: CA_CQI
+--             currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(get_character_by_cqi(testCqi)));
+--         end
+--     end, 
+--     true
+-- );
+
+local currentChar = nil --: CA_CHAR
+
+applyFunctionWhenCharSelected(
+    function(selectedChar)
+        if selectedChar == currentChar then
+            return
         end
-    end, 
-    true
+        currentChar = selectedChar;
+        if not currentUi then
+            cm:callback(
+                function()
+                    -- For some reason not working
+                    if not find_uicomponent(core:get_ui_root(), "character_details_panel") then
+                        return;
+                    end
+                    output("Init skill queue");
+                    currentUi = SkillQueueUi.new(skillQueueManager.model:getOrCreateCharacterSkillQueue(selectedChar));
+                end, 0, "SkillQueueUiCreator"
+            );
+        else
+            currentUi:panelClosed(true);
+            currentUi = SkillQueueUi.new(skillQueueManager.model:getOrCreateCharacterSkillQueue(selectedChar));
+        end
+    end
 );
 
 core:add_listener(
@@ -53,7 +100,7 @@ core:add_listener(
     end,
     function(context)
         if currentUi then
-            currentUi:panelClosed();
+            currentUi:panelClosed(false);
             currentUi = nil;
         end
     end, 
