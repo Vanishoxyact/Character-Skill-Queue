@@ -96,14 +96,17 @@ function SkillQueueViewModel.detectAllSkillLevels(self)
     end
 end
 
---v function(self: SKILL_QUEUE_VIEW_MODEL, characterSkillQueue: CHARACTER_SKILL_QUEUE, skill: string, index: int) --> int
+--v function(self: SKILL_QUEUE_VIEW_MODEL, characterSkillQueue: CHARACTER_SKILL_QUEUE, skill: string, index: int?) --> int
 function SkillQueueViewModel.calculateSkillRank(self, characterSkillQueue, skill, index)
     local initialRank = self.initialSkillLevel[skill] or 0;
     local skillRank = initialRank;
     local queuedSkills = characterSkillQueue:getAllSkills();
     for i, queuedSkill in ipairs(queuedSkills) do
-        if i > index then
-            break
+        if index then
+            local resolvedIndex = index --: int
+            if i > resolvedIndex then
+                break
+            end
         end
         if queuedSkill == skill then
             skillRank = skillRank + 1;
@@ -203,6 +206,11 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL, skill: string)
 function SkillQueueViewModel.queueSkill(self, skill)
+    local currentSkillLevel = self:calculateSkillRank(self.characterSkillQueue, skill);
+    if currentSkillLevel >= self.maxSkillLevel[skill] then
+        output("Skill already at max level: " .. skill);
+        return;
+    end
     output("Skill queued: " .. skill);
     self.characterSkillQueue:addSkillToQueue(skill);
     local queuedSkill = self:createQueuedSkill(skill, self.characterSkillQueue);
