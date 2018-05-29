@@ -11,12 +11,17 @@ SkillQueueUi.skillQueueButton = nil --: BUTTON
 SkillQueueUi.skillQueuerButton = nil --: BUTTON
 SkillQueueUi.queuedSkillToQueuedSkillContainer = {} --: map<QUEUED_SKILL, CONTAINER>
 
---v function(self: SKILL_QUEUE_UI)
-function SkillQueueUi.panelClosed(self)
+--v function(self: SKILL_QUEUE_UI, switched: boolean)
+function SkillQueueUi.panelClosed(self, switched)
     self.viewModel:setQueueExpanded(false);
     self.skillQueueButton:Delete();
     self.skillQueuerButton:Delete();
     self.skillQueuePanel:Clear();
+    if not switched then
+        self.skillQueuer:resetSkillHighlights();
+    else
+        core:remove_listener("SkillCardClickListener");
+    end
 end
 
 --v function(self: SKILL_QUEUE_UI)
@@ -145,11 +150,16 @@ end
 
 --v function(characterSkillQueue: CHARACTER_SKILL_QUEUE) --> SKILL_QUEUE_UI
 function SkillQueueUi.new(characterSkillQueue)
+    output("SkillQueueUi init");
     local squi = {};
     setmetatable(squi, SkillQueueUi);
     --# assume squi: SKILL_QUEUE_UI
     squi.viewModel = SkillQueueViewModel.new(characterSkillQueue);
-    squi.skillQueuer = SkillQueuer.new(function(skill) end);
+    squi.skillQueuer = SkillQueuer.new(
+        function(skill) 
+            squi.viewModel:queueSkill(skill);
+        end
+    );
     squi.queuedSkillToQueuedSkillContainer = {};
     squi.skillsPanel = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel");
     squi:setUpRegistrations();

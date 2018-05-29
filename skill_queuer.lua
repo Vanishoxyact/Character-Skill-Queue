@@ -33,23 +33,42 @@ function SkillQueuer.findSkillCards(self)
 end
 
 --v function(self: SKILL_QUEUER)
+function SkillQueuer.registerForSkillCardClick(self)
+    core:add_listener(
+        "SkillCardClickListener",
+        "ComponentLClickUp",
+        function(context)
+            --# assume context : CA_UIContext
+            local clickedComponent = UIComponent(context.component);
+            local skillCards = self:findSkillCards();
+            return listContains(skillCards, clickedComponent);
+        end,
+        function(context)
+            local clickedCard = UIComponent(context.component);
+            local cardParent = UIComponent(clickedCard:Parent());
+            self.skillSelectedCallback(cardParent:Id());
+        end,
+        true
+    );
+end
+
+--v function(self: SKILL_QUEUER)
 function SkillQueuer.highightQueueableSkills(self)
-    -- available, locked, hover
-    output("highightQueueableSkills");
     local skillCards = self:findSkillCards();
     for i, skillCard in ipairs(skillCards) do
         output("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
         self.defaultSkillCardState[skillCard] = skillCard:CurrentState();
         skillCard:SetState("available");
     end
+    self:registerForSkillCardClick();
 end
 
 --v function(self: SKILL_QUEUER)
 function SkillQueuer.resetSkillHighlights(self)
-    output("resetSkillHighlights");
     for skillCard, state in pairs(self.defaultSkillCardState) do
         skillCard:SetState(state);
     end
+    core:remove_listener("SkillCardClickListener");
 end
 
 --v function(skillSelectedCallback: function(string)) --> SKILL_QUEUER
