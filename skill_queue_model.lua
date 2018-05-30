@@ -1,4 +1,3 @@
-local EventManager = require("event_manager");
 local CharacterSkillQueue = require("character_skill_queue");
 local SkillQueueModel = {} --# assume SkillQueueModel: SKILL_QUEUE_MODEL
 SkillQueueModel.__index = SkillQueueModel;

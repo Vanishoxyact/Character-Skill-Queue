@@ -1,4 +1,3 @@
-local EventManager = require("event_manager");
 local QueuedSkill = {} --# assume QueuedSkill: QUEUED_SKILL
 QueuedSkill.__index = QueuedSkill;
 QueuedSkill.skill = nil --: string
