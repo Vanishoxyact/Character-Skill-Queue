@@ -76,12 +76,38 @@ function SkillQueueManager.registerForCharRankUp(self)
 end
 
 --v function(self: SKILL_QUEUE_MANAGER)
+function SkillQueueManager.registerForCharCreated(self)
+    core:add_listener(
+        "CharCreatedRankListener",
+        "CharacterCreated",
+        function(context)
+            return true;
+        end,
+        function(context)
+            local createdCharCqi = context:character():cqi();
+            cm:callback(
+                function()
+                    local character = get_character_by_cqi(createdCharCqi);
+                    if character then
+                        self.characterRanks[createdCharCqi] = character:rank();
+                    end
+                end, 0, "CharCreatedCallbackCallback"
+            );
+        end,
+        true
+    );
+end
+
+--v function(self: SKILL_QUEUE_MANAGER)
 function SkillQueueManager.calculateCharacterRanks(self)
-    local currentFaction = get_faction(cm:get_local_faction());
-    local characters = currentFaction:character_list();
-    for i = 0, characters:num_items() - 1 do
-        local currentCharacter = characters:item_at(i);
-        self.characterRanks[currentCharacter:cqi()] = currentCharacter:rank();
+    local factionList = cm:model():world():faction_list();
+    for i = 0, factionList:num_items() - 1 do
+        local currentFaction = factionList:item_at(i);
+        local characters = currentFaction:character_list();
+        for j = 0, characters:num_items() - 1 do
+            local currentCharacter = characters:item_at(j);
+            self.characterRanks[currentCharacter:cqi()] = currentCharacter:rank();
+        end
     end
 end
 
@@ -94,6 +120,7 @@ function SkillQueueManager.new()
     sqm.model = SkillQueueModel.new();
     sqm:registerForCharRankUp();
     sqm:calculateCharacterRanks();
+    sqm:registerForCharCreated();
     return sqm;
 end
 
