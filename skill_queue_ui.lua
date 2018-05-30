@@ -258,6 +258,7 @@ function SkillQueueUi.disableButtonIfSkillPoints(self)
                 cm:callback(
                     function()
                         self:disableButtonIfSkillPoints();
+                        self.viewModel:detectAllSkillLevels();
                     end, 0, "SkillButtonSkillAllocationListenerCallback"
                 )
             end,
