@@ -112,14 +112,25 @@ end
 
 --v function(self: SKILL_QUEUE_UI, queuedSkillsContainer: CONTAINER)
 function SkillQueueUi.updateQueuedSkillPanel(self, queuedSkillsContainer)
-    queuedSkillsContainer.components = {};
+    local previousList = queuedSkillsContainer.components[1];
+    if previousList then
+        --# assume previousList: LIST_VIEW
+        previousList:DeleteOnlySelf();
+    end
+
+    queuedSkillsContainer:Empty();
+    local queuedSkillList = ListView.new("queuedSkillList", self.skillsPanel, "VERTICAL");
+    local queueDivider = Util.getComponentWithName("skillQueuePanelSideDivider");
+    --# assume queueDivider: IMAGE
+    queuedSkillList:Resize(self.viewModel.skillQueueWidth, queueDivider:Height());
+    queuedSkillsContainer:AddComponent(queuedSkillList);
     for i, queuedSkill in ipairs(self.viewModel.queuedSkills) do
         local queuedSkillContainer = self.queuedSkillToQueuedSkillContainer[queuedSkill];
         if not queuedSkillContainer then
             queuedSkillContainer = QueuedSkillContainer.new(queuedSkill, self.skillsPanel, self.viewModel):getContainer();
             self.queuedSkillToQueuedSkillContainer[queuedSkill] = queuedSkillContainer;
         end
-        queuedSkillsContainer:AddComponent(queuedSkillContainer);
+        queuedSkillList:AddComponent(queuedSkillContainer);
     end
     local missingSkillQueueContrainers = self:calculateMissingSkillQueueContainers();
     for queuedSkill, missingSkillQueueContainer in pairs(missingSkillQueueContrainers) do
