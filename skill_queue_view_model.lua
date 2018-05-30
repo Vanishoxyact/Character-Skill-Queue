@@ -2,7 +2,7 @@ local EventManager = require("event_manager");
 local QueuedSkill = require("queued_skill");
 local SkillQueueViewModel = {} --# assume SkillQueueViewModel: SKILL_QUEUE_VIEW_MODEL
 SkillQueueViewModel.__index = SkillQueueViewModel;
-SkillQueueViewModel.skillQueueWidth = 200;
+SkillQueueViewModel.skillQueueWidth = 320;
 
 SkillQueueViewModel.eventManager = nil --: EVENT_MANAGER
 SkillQueueViewModel.skillListWidth = nil --: number

@@ -32,7 +32,7 @@ end
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.addSkillQueueButton(self)
     local skillQueueButton = TextButton.new("skillQueueButton", self.skillsPanel, "TEXT_TOGGLE_SMALL", "Queue Skills");
-    skillQueueButton:Resize(200, skillQueueButton:Height());
+    skillQueueButton:Resize(self.viewModel.skillQueueWidth, skillQueueButton:Height());
     local statsResetHolder = find_uicomponent(self.skillsPanel, "stats_reset_holder");
     local x, y = statsResetHolder:Position();
     local w, h = statsResetHolder:Bounds();
@@ -49,7 +49,7 @@ end
 --v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.addSkillQueuerButton(self)
     local skillQueuerButton = TextButton.new("skillQueuerButton", self.skillsPanel, "TEXT_TOGGLE_SMALL", "Select skills...");
-    skillQueuerButton:Resize(200, skillQueuerButton:Height());
+    skillQueuerButton:Resize(self.viewModel.skillQueueWidth, skillQueuerButton:Height());
     skillQueuerButton:RegisterForClick(
         function(context)
             if not skillQueuerButton:IsSelected() then
@@ -172,7 +172,7 @@ function SkillQueueUi.createSkillQueuePanel(self)
     local skillQueuePanel = Container.new(FlowLayout.VERTICAL);
     skillQueuePanel:AddGap(20);
     local skillQueuePanelDivider = Image.new("skillQueuePanelDivider", self.skillsPanel, "ui/skins/default/separator_line.png");
-    skillQueuePanelDivider:Resize(200, 2);
+    skillQueuePanelDivider:Resize(self.viewModel.skillQueueWidth, 2);
     skillQueuePanel:AddComponent(skillQueuePanelDivider);
 
     local skillListW, skillListH = self.skillList:Bounds();
@@ -191,6 +191,14 @@ function SkillQueueUi.createSkillQueuePanel(self)
 end
 
 --v function(self: SKILL_QUEUE_UI)
+function SkillQueueUi.resetHandlePosition(self)
+    local handle = find_uicomponent(self.skillList, "hslider", "handle");
+    local frameLeft = find_uicomponent(self.skillList, "hslider", "frame_left");
+    local handleX, handleY = handle:Bounds();
+    handle:MoveTo(frameLeft:Position() + frameLeft:Bounds() - 1, handleY);
+end
+
+--v function(self: SKILL_QUEUE_UI)
 function SkillQueueUi.setUpRegistrations(self)
     self.viewModel:RegisterForEvent(
         "QUEUE_EXPANDED_CHANGE",
@@ -199,6 +207,7 @@ function SkillQueueUi.setUpRegistrations(self)
             self:updateSkillQueuePanel();
             self.skillQueuerButton:SetState("active");
             self:markSelectedSkills();
+            self:resetHandlePosition();
         end
     );
 end
