@@ -2,54 +2,63 @@ local QueuedSkillContainer = {} --# assume QueuedSkillContainer: QUEUED_SKILL_CO
 QueuedSkillContainer.__index = QueuedSkillContainer;
 QueuedSkillContainer.container = nil --: CONTAINER
 QueuedSkillContainer.queuedSkill = nil --: QUEUED_SKILL
+QueuedSkillContainer.viewModel = nil --: SKILL_QUEUE_VIEW_MODEL
 QueuedSkillContainer.parentPanel = nil --: CA_UIC
+
+--v function(self: QUEUED_SKILL_CONTAINER) --> CONTAINER
+function QueuedSkillContainer.createSkillNameContainer(self)
+    local queuedSkill = self.queuedSkill;
+    local skillNameContainer = Container.new(FlowLayout.HORIZONTAL);
+    local skillName = queuedSkill.skill;
+    local skillRank = queuedSkill.skillRank;
+    local localizedname = effect.get_localised_string("character_skills_localised_name_" .. skillName);
+    local skillNameText = Text.new("QueuedSkillContainerSkillName" .. queuedSkill.id, self.parentPanel, "NORMAL", localizedname);
+    skillNameContainer:AddComponent(skillNameText);
+    return skillNameContainer;
+end
 
 --v function(self: QUEUED_SKILL_CONTAINER) --> CONTAINER
 function QueuedSkillContainer.createCharacterRankContainer(self)
     local queuedSkill = self.queuedSkill;
     local characterRankContainer = Container.new(FlowLayout.VERTICAL);
     local characterRankFrame = Image.new("QueuedSkillContainercharacterRankFrame" .. queuedSkill.id, self.parentPanel, "ui/skins/warhammer2/rank_dspl_frame.png");
-    characterRankFrame:Resize(50, 50);
+    characterRankFrame:Resize(30, 30);
     characterRankContainer:AddComponent(characterRankFrame);
-    characterRankContainer:AddGap(characterRankFrame:Height() / 2 * -1 - 7);
+
+    local rankString = tostring(queuedSkill.charRank);
+    if queuedSkill.charRank < 10 then
+        rankString = " " .. rankString;
+    end
+    local characterRankNumber = Text.new("QueuedSkillContainercharacterRankNumber" .. queuedSkill.id, self.parentPanel, "NORMAL", rankString);
+    characterRankNumber:Resize(10, 10);
+
+    local textOffsetFromTop = characterRankFrame:Height() /2 - characterRankNumber:Height() / 2;
+    characterRankContainer:AddGap((characterRankFrame:Height() * -1) + textOffsetFromTop);
 
     local characterRankNumberContainer = Container.new(FlowLayout.HORIZONTAL);
-    characterRankNumberContainer:AddGap(characterRankFrame:Width() / 2 - 10)
-    if queuedSkill.charRank < 10 then
-        characterRankNumberContainer:AddGap(3);
-    end
-    local characterRankNumber = Text.new("QueuedSkillContainercharacterRankNumber" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.charRank));
+    characterRankNumberContainer:AddGap(characterRankFrame:Width() / 2 - characterRankNumber:Width() / 2)
     characterRankNumberContainer:AddComponent(characterRankNumber);
+
     characterRankContainer:AddComponent(characterRankNumberContainer);
     characterRankContainer:AddGap(characterRankFrame:Height() / 2);
 
     queuedSkill:RegisterForEvent(
         "QUEUED_SKILL_CHAR_RANK_CHANGE",
         function()
-            characterRankNumber:SetText(tostring(queuedSkill.charRank));
+            local rankString = tostring(queuedSkill.charRank);
+            if queuedSkill.charRank < 10 then
+                rankString = " " .. rankString;
+            end
+            characterRankNumber:SetText(rankString);
         end
     );
     return characterRankContainer;
 end
 
---v function(self: QUEUED_SKILL_CONTAINER, queuedSkill: QUEUED_SKILL, viewModel: SKILL_QUEUE_VIEW_MODEL)
-function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
-    local container = self.container;
-    local skillName = queuedSkill.skill;
-    local skillRank = queuedSkill.skillRank;
-    local localizedname = effect.get_localised_string("character_skills_localised_name_" .. skillName);
-    local skillNameText = Text.new("QueuedSkillContainerSkillName" .. queuedSkill.id, self.parentPanel, "NORMAL", localizedname .. skillRank);
-    container:AddComponent(skillNameText);
-    --local charRankText = Text.new("QueuedSkillContainerCharRankText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.charRank));
-    --container:AddComponent(charRankText);
-    --local indexText = Text.new("QueuedSkillContainerIndexText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.index));
-    --container:AddComponent(indexText);
-    --local idText = Text.new("QueuedSkillContainerIdText" .. queuedSkill.id, self.parentPanel, "NORMAL", tostring(queuedSkill.id));
-    --container:AddComponent(idText);
-
-    local characterRankContainer = self:createCharacterRankContainer();
-    container:AddComponent(characterRankContainer);
-
+--v function(self: QUEUED_SKILL_CONTAINER) --> CONTAINER
+function QueuedSkillContainer.createButtonsContainer(self)
+    local queuedSkill = self.queuedSkill;
+    local viewModel = self.viewModel;
     local buttonsContainer = Container.new(FlowLayout.HORIZONTAL);
     local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/icon_toggle_vertical_panel_flipped.png");
     moveUpButton:Resize(25, 25);
@@ -77,12 +86,63 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
         end
     );
     buttonsContainer:AddComponent(removeButton);
-    container:AddComponent(buttonsContainer);
+    return buttonsContainer;
+end
+
+--v function(self: QUEUED_SKILL_CONTAINER, skillRankContainer: CONTAINER)
+function QueuedSkillContainer.updateSkillRankContainer(self, skillRankContainer)
+    local rankIcons = skillRankContainer:RecursiveRetrieveAllComponents();
+    for i, rankIcon in ipairs(rankIcons) do
+        --# assume rankIcon: IMAGE
+        if i <= self.queuedSkill.skillRank then
+            rankIcon:SetVisible(true);
+        else
+            rankIcon:SetVisible(false);
+        end
+    end
+end
+
+--v function(self: QUEUED_SKILL_CONTAINER) --> CONTAINER
+function QueuedSkillContainer.createSkillRankContainer(self)
+    local queuedSkill = self.queuedSkill;
+    local skillRankContainer = Container.new(FlowLayout.VERTICAL);
+    local maxRank = self.viewModel.maxSkillLevel[queuedSkill.skill];
+    for i=0, maxRank do
+        local rankIcon = Image.new("QueuedSkillRankIcon" .. i .. queuedSkill.id, self.parentPanel, "ui/skins/warhammer2/skills_tab_level_off.png");
+        rankIcon:Resize(10, 10);
+        skillRankContainer:AddComponent(rankIcon);
+    end
+    self:updateSkillRankContainer(skillRankContainer);
+    queuedSkill:RegisterForEvent(
+        "QUEUED_SKILL_SKILL_RANK_CHANGE",
+        function()
+            self:updateSkillRankContainer(skillRankContainer);
+        end
+    );
+    return skillRankContainer;
+end
+
+--v function(self: QUEUED_SKILL_CONTAINER, queuedSkill: QUEUED_SKILL, viewModel: SKILL_QUEUE_VIEW_MODEL)
+function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
+    local container = self.container;
+    local rowContainer = Container.new(FlowLayout.HORIZONTAL);
+    container:AddComponent(rowContainer);
+
+    local characterRankContainer = self:createCharacterRankContainer();
+    rowContainer:AddComponent(characterRankContainer);
+
+    local skillNameContainer = self:createSkillNameContainer();
+    rowContainer:AddComponent(skillNameContainer);
+
+    local skillRankContainer = self:createSkillRankContainer();
+    rowContainer:AddComponent(skillRankContainer);
+
+    local buttonsContainer = self:createButtonsContainer();
+    rowContainer:AddComponent(buttonsContainer);
 
     local queuedSkillContainerDivider = Image.new("QueuedSkillContainerDivider" .. queuedSkill.id, self.parentPanel, "ui/skins/default/separator_line.png");
-    queuedSkillContainerDivider:Resize(200, 2);
+    queuedSkillContainerDivider:Resize(viewModel.skillQueueWidth, 2);
     container:AddComponent(queuedSkillContainerDivider);
-
 
     -- queuedSkill:RegisterForEvent(
     --     "QUEUED_SKILL_INDEX_CHANGE",
@@ -96,12 +156,12 @@ function QueuedSkillContainer.populateContainer(self, queuedSkill, viewModel)
     --         charRankText:SetText(tostring(queuedSkill.charRank));
     --     end
     -- );
-    queuedSkill:RegisterForEvent(
-        "QUEUED_SKILL_SKILL_RANK_CHANGE",
-        function()
-            skillNameText:SetText(tostring(localizedname .. queuedSkill.skillRank));
-        end
-    );
+    -- queuedSkill:RegisterForEvent(
+    --     "QUEUED_SKILL_SKILL_RANK_CHANGE",
+    --     function()
+    --         skillNameText:SetText(tostring(localizedname .. queuedSkill.skillRank));
+    --     end
+    -- );
 end
 
 --v function(queuedSkill: QUEUED_SKILL, parentPanel: CA_UIC, viewModel: SKILL_QUEUE_VIEW_MODEL) --> QUEUED_SKILL_CONTAINER
@@ -111,6 +171,7 @@ function QueuedSkillContainer.new(queuedSkill, parentPanel, viewModel)
     --# assume qsc: QUEUED_SKILL_CONTAINER
     qsc.container = Container.new(FlowLayout.VERTICAL);
     qsc.queuedSkill = queuedSkill;
+    qsc.viewModel = viewModel;
     qsc.parentPanel = parentPanel;
     qsc:populateContainer(queuedSkill, viewModel);
     return qsc;
