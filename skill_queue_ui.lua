@@ -14,9 +14,11 @@ SkillQueueUi.skillQueuerButton = nil --: TEXT_BUTTON
 SkillQueueUi.queuedSkillToQueuedSkillContainer = {} --: map<QUEUED_SKILL, CONTAINER>
 SkillQueueUi.markedSkills = {} --: vector<CA_UIC>
 SkillQueueUi.markedSkillLabels = {} --: vector<TEXT>
+SkillQueueUi.panelSwitched = false --: boolean
 
 --v function(self: SKILL_QUEUE_UI, switched: boolean)
 function SkillQueueUi.panelClosed(self, switched)
+    self.panelSwitched = switched;
     self.skillQueueButton:Delete();
     self.skillQueuePanel:Clear();
     if not switched then
@@ -24,6 +26,8 @@ function SkillQueueUi.panelClosed(self, switched)
     else
         core:remove_listener("SkillCardClickListener");
     end
+    core:remove_listener("SkillButtonSkillAllocationListener");
+    core:remove_listener("resetSkillButtonListener");
     self.skillQueuer:resetDefaultStates();
     self.markedSkills = {};
     self.viewModel:setQueueExpanded(false);
@@ -152,6 +156,28 @@ function SkillQueueUi.markSelectedSkills(self)
     end
 end
 
+--v function(self: SKILL_QUEUE_UI)
+function SkillQueueUi.disableResetSkillsButton(self)
+    local resetButton = find_uicomponent(self.skillsPanel, "stats_reset_holder", "button_stats_reset");
+    local currentState = resetButton:CurrentState();
+    if #self.viewModel.queuedSkills > 0 then
+        resetButton:SetState("active");
+        resetButton:SetDisabled(true);
+        resetButton:SetOpacity(50);
+        resetButton:SetState("inactive");
+        resetButton:SetDisabled(true);
+        resetButton:SetOpacity(50);
+    else
+        resetButton:SetState("active");
+        resetButton:SetDisabled(false);
+        resetButton:SetOpacity(255);
+        resetButton:SetState("inactive");
+        resetButton:SetDisabled(false);
+        resetButton:SetOpacity(255);
+    end
+    resetButton:SetState(currentState);
+end
+
 --v function(self: SKILL_QUEUE_UI) --> CONTAINER
 function SkillQueueUi.createQueuedSkillsPanel(self)
     local queuedSkillsContainer = Container.new(FlowLayout.VERTICAL);
@@ -161,6 +187,7 @@ function SkillQueueUi.createQueuedSkillsPanel(self)
             self:updateQueuedSkillPanel(queuedSkillsContainer);
             self.skillQueuePanel:Reposition();
             self:markSelectedSkills();
+            self:disableResetSkillsButton();
         end
     )
     self:updateQueuedSkillPanel(queuedSkillsContainer);
@@ -204,10 +231,56 @@ function SkillQueueUi.setUpRegistrations(self)
         "QUEUE_EXPANDED_CHANGE",
         function()
             self:resizeSkillList();
-            self:updateSkillQueuePanel();
-            self.skillQueuerButton:SetState("active");
-            self:markSelectedSkills();
-            self:resetHandlePosition();
+            if not self.panelSwitched then
+                self:updateSkillQueuePanel();
+                self.skillQueuerButton:SetState("active");
+                self:markSelectedSkills();
+                self:resetHandlePosition();
+            end
+        end
+    );
+end
+
+SkillQueueUi.disableButtonIfSkillPoints = nil --: function(self: SKILL_QUEUE_UI)
+--v function(self: SKILL_QUEUE_UI)
+function SkillQueueUi.disableButtonIfSkillPoints(self)
+    local skillPointsUic = find_uicomponent(core:get_ui_root(), "character_details_panel", "dy_pts");
+    local skillPoints = tonumber(skillPointsUic:GetStateText(), 10);
+    if skillPoints > 0 then
+        self.skillQueueButton:SetDisabled(true);
+        core:add_listener(
+            "SkillButtonSkillAllocationListener",
+            "CharacterSkillPointAllocated",
+            function(context)
+                return true;
+            end,
+            function(context)
+                cm:callback(
+                    function()
+                        self:disableButtonIfSkillPoints();
+                    end, 0, "SkillButtonSkillAllocationListenerCallback"
+                )
+            end,
+            false
+        );
+    else
+        self.skillQueueButton:SetDisabled(false);
+    end
+end
+
+--v function(self: SKILL_QUEUE_UI)
+function SkillQueueUi.listenToResetButtonClick(self)
+    local resetButton = find_uicomponent(self.skillsPanel, "stats_reset_holder", "button_stats_reset");
+    Util.registerForClick(
+        resetButton,
+        "resetSkillButtonListener",
+        function(context)
+            self.viewModel:setQueueExpanded(false);
+            cm:callback(
+                function()
+                    self:disableButtonIfSkillPoints();
+                end, 0, "ResetButtonClickedCallback"
+            )
         end
     );
 end
@@ -229,10 +302,14 @@ function SkillQueueUi.new(characterSkillQueue)
     squi.queuedSkillToQueuedSkillContainer = {};
     squi.skillsPanel = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel");
     squi.skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview");
+    squi.panelSwitched = false;
     squi:setUpRegistrations();
     squi:addSkillQueueButton();
     squi:createSkillQueuePanel();
     squi:addSkillQueuerButton();
+    squi:disableButtonIfSkillPoints();
+    squi:disableResetSkillsButton();
+    squi:listenToResetButtonClick();
     return squi;
 end
 

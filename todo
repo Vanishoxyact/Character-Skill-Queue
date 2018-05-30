@@ -1,4 +1,3 @@
-Disallow queuing if skill points > 0
 Issue with current skill level calc if skill points spent
 Rank calculation errors for new campaign
 Persistence
@@ -15,3 +14,4 @@ Remove quest skills
 Queue index next to queue markers
 Reset scroll bar
 UI
+Disallow queuing if skill points > 0
