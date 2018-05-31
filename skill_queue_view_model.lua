@@ -33,11 +33,11 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL)
 function SkillQueueViewModel.findSkillCards(self)
-    output("findSkillCards");
+    out("findSkillCards");
     local skillCards = self.skillCards;
     local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview", "list_clip", "list_box");
     if not skillList then
-        output("No skill list");
+        out("No skill list");
     end
     for i=0, skillList:ChildCount()-1  do
         local skillChain = UIComponent(skillList:Find(i));
@@ -62,7 +62,7 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL)
 function SkillQueueViewModel.detectAllSkillLevels(self)
-    output("detectAllSkillLevels");
+    out("detectAllSkillLevels");
     for skill, skillCard in pairs(self.skillCards) do
         local skillLevelParent = find_uicomponent(skillCard, "level_parent");
         local level1 = find_uicomponent(skillLevelParent, "level1");
@@ -120,7 +120,7 @@ function SkillQueueViewModel.createQueuedSkill(self, skill, characterSkillQueue)
     local queuedSkill = QueuedSkill.new(skill);
     queuedSkill.id = self.queuedSkillsTotal;
     local i = #self.queuedSkills + 1;
-    local charCurrentRank = get_character_by_cqi(characterSkillQueue.characterCqi):rank();
+    local charCurrentRank = cm:get_character_by_cqi(characterSkillQueue.characterCqi):rank();
     queuedSkill.skillRank = self:calculateSkillRank(characterSkillQueue, skill, i);
     queuedSkill.index = i;
     queuedSkill.charRank = charCurrentRank + i;
@@ -150,7 +150,7 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
 function SkillQueueViewModel.moveQueuedSkillUp(self, skillIndex)
-    output("Moving skill up with index: " .. skillIndex);
+    out("Moving skill up with index: " .. skillIndex);
     if skillIndex == 1 then
         return;
     end
@@ -207,10 +207,10 @@ end
 function SkillQueueViewModel.queueSkill(self, skill)
     local currentSkillLevel = self:calculateSkillRank(self.characterSkillQueue, skill);
     if currentSkillLevel >= self.maxSkillLevel[skill] then
-        output("Skill already at max level: " .. skill);
+        out("Skill already at max level: " .. skill);
         return;
     end
-    output("Skill queued: " .. skill);
+    out("Skill queued: " .. skill);
     self.characterSkillQueue:addSkillToQueue(skill);
     local queuedSkill = self:createQueuedSkill(skill, self.characterSkillQueue);
     table.insert(self.queuedSkills, queuedSkill);

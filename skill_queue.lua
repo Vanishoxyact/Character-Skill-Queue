@@ -5,11 +5,11 @@ local currentUi = nil --: SKILL_QUEUE_UI
 local skillQueueManager = nil --: SKILL_QUEUE_MANAGER
 
 function startSkillQueue()
-    output("Skill queue started");
+    out("Skill queue started");
     skillQueueManager = SkillQueueManager.new();
     -- local testCqi = 31;
     -- --# assume testCqi: CA_CQI
-    -- local testQueue = skillQueueManager.model:createCharacterSkillQueue(get_character_by_cqi(testCqi));
+    -- local testQueue = skillQueueManager.model:createCharacterSkillQueue(cm:get_character_by_cqi(testCqi));
     -- testQueue:addSkillToQueue("wh2_main_skill_hef_noble_unique_combat");
     -- testQueue:addSkillToQueue("wh2_main_skill_hef_combat_valour_of_ages");
     -- testQueue:addSkillToQueue("wh2_main_skill_hef_combat_valour_of_ages");
@@ -37,11 +37,11 @@ core:add_listener(
 --     function(context)
 --         cm:callback(
 --             function()
---                 output("Init skill queue");
+--                 out("Init skill queue");
 --                 if not currentUi then
 --                     local testCqi = 31;
 --                     --# assume testCqi: CA_CQI
---                     currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(get_character_by_cqi(testCqi)));
+--                     currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(cm:get_character_by_cqi(testCqi)));
 --                 end
 --             end, 0, "SkillQueueUiCreator"
 --         )
@@ -60,7 +60,7 @@ core:add_listener(
 --             currentUi:panelClosed();
 --             local testCqi = 31;
 --             --# assume testCqi: CA_CQI
---             currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(get_character_by_cqi(testCqi)));
+--             currentUi = SkillQueueUi.new(skillQueueManager.model:getSkillQueueForCharacter(cm:get_character_by_cqi(testCqi)));
 --         end
 --     end, 
 --     true
@@ -80,7 +80,7 @@ applyFunctionWhenCharSelected(
         if not currentUi then
             cm:callback(
                 function()
-                    output("Init skill queue");
+                    out("Init skill queue");
                     currentUi = SkillQueueUi.new(skillQueueManager.model:getOrCreateCharacterSkillQueue(selectedChar));
                 end, 0, "SkillQueueUiCreator"
             );

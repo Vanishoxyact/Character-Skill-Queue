@@ -9,7 +9,7 @@ function SkillQueuer.findSkillCards(self)
     local skillCards = {} --: vector<CA_UIC>
     local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview", "list_clip", "list_box");
     if not skillList then
-        output("No skill list");
+        out("No skill list");
     end
     for i=0, skillList:ChildCount()-1  do
         local skillChain = UIComponent(skillList:Find(i));
@@ -62,7 +62,7 @@ end
 function SkillQueuer.highightQueueableSkills(self)
     local skillCards = self:findSkillCards();
     for i, skillCard in ipairs(skillCards) do
-        output("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
+        out("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
         self.defaultSkillCardState[skillCard] = skillCard:CurrentState();
         local skill = self:getSkillForCard(skillCard);
         if self.skillValidator:canUnlockSkill(skill) then

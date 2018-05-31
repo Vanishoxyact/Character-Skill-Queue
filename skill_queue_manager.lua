@@ -11,9 +11,9 @@ function SkillQueueManager.allocateSkill(self, character, skill, successCallback
         function()
             core:remove_listener("SkillAllocationDetector");
             if not skillAllocated then
-                output("Failed to allocate skill: " .. skill);
+                out("Failed to allocate skill: " .. skill);
             else
-                output("Skill allocated");
+                out("Skill allocated");
                 self.model:getSkillQueueForCharacter(character):skilledInto(skill);
                 successCallback();
             end
@@ -30,13 +30,15 @@ function SkillQueueManager.allocateSkill(self, character, skill, successCallback
         end,
         true
     );
+    out("adding skill");
     cm:force_add_skill("character_cqi:" .. tonumber(character:cqi()), skill);
+    out("skill added");
 end
 
 --# assume SKILL_QUEUE_MANAGER.processCharRankedUp: function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, ranks: integer)
 --v function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, ranks: integer)
 function SkillQueueManager.processCharRankedUp(self, character, ranks)
-    output("Char ranked up: " .. tonumber(character:cqi()));
+    out("Char ranked up: " .. tonumber(character:cqi()));
     if ranks == 0 then
         return;
     end
@@ -67,7 +69,7 @@ function SkillQueueManager.registerForCharRankUp(self)
         function(context)
             local rankedUpChar = context:character();
             local rankDiff = rankedUpChar:rank() - self.characterRanks[rankedUpChar:cqi()];
-            output("char rank diff : " .. rankDiff);
+            out("char rank diff : " .. rankDiff);
             self.characterRanks[rankedUpChar:cqi()] = rankedUpChar:rank();
             self:processCharRankedUp(rankedUpChar, rankDiff);
         end,
@@ -87,7 +89,7 @@ function SkillQueueManager.registerForCharCreated(self)
             local createdCharCqi = context:character():cqi();
             cm:callback(
                 function()
-                    local character = get_character_by_cqi(createdCharCqi);
+                    local character = cm:get_character_by_cqi(createdCharCqi);
                     if character then
                         self.characterRanks[createdCharCqi] = character:rank();
                     end

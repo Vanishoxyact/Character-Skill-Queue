@@ -75,7 +75,7 @@ function SkillQueueUi.resizeSkillList(self)
     skillList:SetCanResizeWidth(true);
     local skillListWidth = self.viewModel.skillListWidth;
     if not skillListWidth then
-        output("Failed to resize skill list as skill list width not known.")
+        out("Failed to resize skill list as skill list width not known.")
         return;
     end
     local w, h = skillList:Dimensions();
@@ -299,7 +299,7 @@ end
 
 --v function(characterSkillQueue: CHARACTER_SKILL_QUEUE) --> SKILL_QUEUE_UI
 function SkillQueueUi.new(characterSkillQueue)
-    output("SkillQueueUi init");
+    out("SkillQueueUi init");
     local squi = {};
     setmetatable(squi, SkillQueueUi);
     --# assume squi: SKILL_QUEUE_UI

@@ -59,6 +59,12 @@ function SkillQueueModel.generateSaveTable(self)
     return saveTable;
 end
 
+--v function(tab: any) --> string
+local function GetTableSaveState(tab)
+    local ret = "return {"..cm:process_table_save(tab).."}";
+    return ret;
+end
+
 --v function(self: SKILL_QUEUE_MODEL)
 function SkillQueueModel.saveSkillQueues(self)
     local tableString = GetTableSaveState(self:generateSaveTable());

@@ -7,23 +7,23 @@ function calculateIndexOfSelectedAgent()
         if string.match(childId, "Agent ") and child:Visible() then
             if child:CurrentState() == "Selected" then
                 local agentNumber = string.match(childId, "Agent (%d+)");
-                output("agentNumber: " .. agentNumber);
+                out("agentNumber: " .. agentNumber);
                 return tonumber(agentNumber, 10);
             end
         end
     end
-    output("Selected agent not found");
+    out("Selected agent not found");
     return nil;
 end
 
 --v function(index: number) --> CA_CHAR
 function getCharFromSelectedForceAtIndex(index)
-    output("A");
+    out("A");
     local char = cm:get_campaign_ui_manager():get_char_selected();
-    output("B");
+    out("B");
     local cqi = string.sub(char, 15);
     --# assume cqi: CA_CQI
-    local selectedLord = get_character_by_cqi(cqi);
+    local selectedLord = cm:get_character_by_cqi(cqi);
 
     local charType = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "character_details_subpanel", "frame", "details", "info_list", "dy_type");
     if charType then
@@ -33,15 +33,15 @@ function getCharFromSelectedForceAtIndex(index)
         end
     end
 
-    output("C");
+    out("C");
     if not selectedLord:has_military_force() then
         return selectedLord;
     end
     local selectedMilForce = selectedLord:military_force();
-    output("D");
+    out("D");
     local character_list = selectedMilForce:character_list();
-    output("E");
-    output("num items: " .. character_list:num_items() .. " index " .. index);
+    out("E");
+    out("num items: " .. character_list:num_items() .. " index " .. index);
     return character_list:item_at(index);
 end
 
@@ -49,22 +49,22 @@ end
 function calculateSelectedCharacter()
     local indexOfSelectedAgent = calculateIndexOfSelectedAgent();
     if not indexOfSelectedAgent then
-        output("No index of selected agent");
+        out("No index of selected agent");
         local char = cm:get_campaign_ui_manager():get_char_selected();
         local cqi = string.sub(char, 15);
         --# assume cqi: CA_CQI
-        local selectedLord = get_character_by_cqi(cqi);
-        output("Selected char: " .. tostring(selectedLord:cqi()));
+        local selectedLord = cm:get_character_by_cqi(cqi);
+        out("Selected char: " .. tostring(selectedLord:cqi()));
         return selectedLord;
     end
     local selectedChar = getCharFromSelectedForceAtIndex(indexOfSelectedAgent);
-    output("F");
-    output(tostring(selectedChar));
+    out("F");
+    out(tostring(selectedChar));
     if not selectedChar then
-        output("Failed to get selected char");
+        out("Failed to get selected char");
         return nil;
     end
-    output("Selected char: " .. tostring(selectedChar:cqi()));
+    out("Selected char: " .. tostring(selectedChar:cqi()));
     return selectedChar;
 end
 
@@ -123,15 +123,15 @@ core:add_listener(
 --     end,
 --     function(context)
 --         local char = context:character();
---         output("Char ranked up: " .. char:cqi());
+--         out("Char ranked up: " .. char:cqi());
 --         if char:cqi() == 31 then
---             output("Correct char");
---             cm:force_add_skill(char_lookup_str(char), "wh2_main_skill_hef_noble_unique_combat");
+--             out("Correct char");
+--             cm:force_add_skill(cm:char_lookup_str(char), "wh2_main_skill_hef_noble_unique_combat");
 --             cm:callback(
 --                 function(context)
---                     cm:force_add_skill(char_lookup_str(char), "wh2_main_skill_hef_combat_valour_of_ages");
---                     cm:force_add_skill(char_lookup_str(char), "wh2_main_skill_hef_combat_valour_of_ages");
---                     cm:force_add_skill(char_lookup_str(char), "wh_main_skill_all_all_self_hard_to_hit");
+--                     cm:force_add_skill(cm:char_lookup_str(char), "wh2_main_skill_hef_combat_valour_of_ages");
+--                     cm:force_add_skill(cm:char_lookup_str(char), "wh2_main_skill_hef_combat_valour_of_ages");
+--                     cm:force_add_skill(cm:char_lookup_str(char), "wh_main_skill_all_all_self_hard_to_hit");
 --                 end, 0, "asdasd"
 --             );
 --         end
