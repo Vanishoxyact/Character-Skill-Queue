@@ -30,15 +30,12 @@ function SkillQueueManager.allocateSkill(self, character, skill, successCallback
         end,
         true
     );
-    out("adding skill");
     cm:force_add_skill("character_cqi:" .. tonumber(character:cqi()), skill);
-    out("skill added");
 end
 
 --# assume SKILL_QUEUE_MANAGER.processCharRankedUp: function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, ranks: integer)
 --v function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, ranks: integer)
 function SkillQueueManager.processCharRankedUp(self, character, ranks)
-    out("Char ranked up: " .. tonumber(character:cqi()));
     if ranks == 0 then
         return;
     end
@@ -69,7 +66,6 @@ function SkillQueueManager.registerForCharRankUp(self)
         function(context)
             local rankedUpChar = context:character();
             local rankDiff = rankedUpChar:rank() - self.characterRanks[rankedUpChar:cqi()];
-            out("char rank diff : " .. rankDiff);
             self.characterRanks[rankedUpChar:cqi()] = rankedUpChar:rank();
             self:processCharRankedUp(rankedUpChar, rankDiff);
         end,

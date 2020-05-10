@@ -62,7 +62,6 @@ end
 function SkillQueuer.highightQueueableSkills(self)
     local skillCards = self:findSkillCards();
     for i, skillCard in ipairs(skillCards) do
-        out("Current state: "  .. skillCard:Id() .. " " .. skillCard:CurrentState());
         self.defaultSkillCardState[skillCard] = skillCard:CurrentState();
         local skill = self:getSkillForCard(skillCard);
         if self.skillValidator:canUnlockSkill(skill) then

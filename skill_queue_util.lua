@@ -7,7 +7,6 @@ function calculateIndexOfSelectedAgent()
         if string.match(childId, "Agent ") and child:Visible() then
             if child:CurrentState() == "Selected" then
                 local agentNumber = string.match(childId, "Agent (%d+)");
-                out("agentNumber: " .. agentNumber);
                 return tonumber(agentNumber, 10);
             end
         end
@@ -18,7 +17,6 @@ end
 
 --v function(index: number) --> CA_CHAR
 function getCharFromSelectedForceAtIndex(index)
-    out("A");
     local cqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
     --# assume cqi: CA_CQI
     local selectedLord = cm:get_character_by_cqi(cqi);
@@ -31,15 +29,11 @@ function getCharFromSelectedForceAtIndex(index)
         end
     end
 
-    out("C");
     if not selectedLord:has_military_force() then
         return selectedLord;
     end
     local selectedMilForce = selectedLord:military_force();
-    out("D");
     local character_list = selectedMilForce:character_list();
-    out("E");
-    out("num items: " .. character_list:num_items() .. " index " .. index);
     return character_list:item_at(index);
 end
 
@@ -47,21 +41,16 @@ end
 function calculateSelectedCharacter()
     local indexOfSelectedAgent = calculateIndexOfSelectedAgent();
     if not indexOfSelectedAgent then
-        out("No index of selected agent");
         local cqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
         --# assume cqi: CA_CQI
         local selectedLord = cm:get_character_by_cqi(cqi);
-        out("Selected char: " .. tostring(selectedLord:cqi()));
         return selectedLord;
     end
     local selectedChar = getCharFromSelectedForceAtIndex(indexOfSelectedAgent);
-    out("F");
-    out(tostring(selectedChar));
     if not selectedChar then
         out("Failed to get selected char");
         return nil;
     end
-    out("Selected char: " .. tostring(selectedChar:cqi()));
     return selectedChar;
 end
 
@@ -112,30 +101,6 @@ core:add_listener(
     end,
     true
 );
-
--- core:add_listener(
---     "RankUpListener",
---     "CharacterRankUp",
---     function(context)
---         return true;
---     end,
---     function(context)
---         local char = context:character();
---         out("Char ranked up: " .. char:cqi());
---         if char:cqi() == 31 then
---             out("Correct char");
---             cm:force_add_skill(cm:char_lookup_str(char), "wh2_main_skill_hef_noble_unique_combat");
---             cm:callback(
---                 function(context)
---                     cm:force_add_skill(cm:char_lookup_str(char), "wh2_main_skill_hef_combat_valour_of_ages");
---                     cm:force_add_skill(cm:char_lookup_str(char), "wh2_main_skill_hef_combat_valour_of_ages");
---                     cm:force_add_skill(cm:char_lookup_str(char), "wh_main_skill_all_all_self_hard_to_hit");
---                 end, 0, "asdasd"
---             );
---         end
---     end,
---     true
--- );
 
 --v function(list: vector<WHATEVER>, value: WHATEVER) --> boolean
 function listContains(list, value)

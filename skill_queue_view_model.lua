@@ -33,7 +33,6 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL)
 function SkillQueueViewModel.findSkillCards(self)
-    out("findSkillCards");
     local skillCards = self.skillCards;
     local skillList = find_uicomponent(core:get_ui_root(), "character_details_panel", "background", "skills_subpanel", "listview", "list_clip", "list_box");
     if not skillList then
@@ -62,7 +61,6 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL)
 function SkillQueueViewModel.detectAllSkillLevels(self)
-    out("detectAllSkillLevels");
     for skill, skillCard in pairs(self.skillCards) do
         local skillLevelParent = find_uicomponent(skillCard, "level_parent");
         local level1 = find_uicomponent(skillLevelParent, "level1");
@@ -150,7 +148,6 @@ end
 
 --v function(self: SKILL_QUEUE_VIEW_MODEL, skillIndex: int)
 function SkillQueueViewModel.moveQueuedSkillUp(self, skillIndex)
-    out("Moving skill up with index: " .. skillIndex);
     if skillIndex == 1 then
         return;
     end
