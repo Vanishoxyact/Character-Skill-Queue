@@ -60,7 +60,7 @@ function QueuedSkillContainer.createButtonsContainer(self)
     local queuedSkill = self.queuedSkill;
     local viewModel = self.viewModel;
     local buttonsContainer = Container.new(FlowLayout.HORIZONTAL);
-    local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/icon_toggle_vertical_panel_flipped.png");
+    local moveUpButton = Button.new("QueuedSkillContainerMoveUpButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/parchment_sort_arrow_up.png");
     moveUpButton:Resize(25, 25);
     moveUpButton:RegisterForClick(
         function(context)
@@ -69,7 +69,7 @@ function QueuedSkillContainer.createButtonsContainer(self)
     );
     buttonsContainer:AddComponent(moveUpButton);
 
-    local moveDownButton = Button.new("QueuedSkillContainerMoveDownButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/icon_toggle_vertical_panel.png");
+    local moveDownButton = Button.new("QueuedSkillContainerMoveDownButton" .. queuedSkill.id, self.parentPanel, "SQUARE", "ui/skins/warhammer2/parchment_sort_arrow_down.png");
     moveDownButton:Resize(25, 25);
     moveDownButton:RegisterForClick(
         function(context)
