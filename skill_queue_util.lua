@@ -19,9 +19,7 @@ end
 --v function(index: number) --> CA_CHAR
 function getCharFromSelectedForceAtIndex(index)
     out("A");
-    local char = cm:get_campaign_ui_manager():get_char_selected();
-    out("B");
-    local cqi = string.sub(char, 15);
+    local cqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
     --# assume cqi: CA_CQI
     local selectedLord = cm:get_character_by_cqi(cqi);
 
@@ -50,8 +48,7 @@ function calculateSelectedCharacter()
     local indexOfSelectedAgent = calculateIndexOfSelectedAgent();
     if not indexOfSelectedAgent then
         out("No index of selected agent");
-        local char = cm:get_campaign_ui_manager():get_char_selected();
-        local cqi = string.sub(char, 15);
+        local cqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
         --# assume cqi: CA_CQI
         local selectedLord = cm:get_character_by_cqi(cqi);
         out("Selected char: " .. tostring(selectedLord:cqi()));
@@ -110,7 +107,8 @@ core:add_listener(
     "ShortcutTriggered",
     function(context) return context.string == "camera_bookmark_view2"; end, --default F11
     function(context)
-        cm:add_agent_experience(cm:get_campaign_ui_manager():get_char_selected(), 5000);
+        local charCqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
+        cm:add_agent_experience(cm:char_lookup_str(charCqi), 5000);
     end,
     true
 );
