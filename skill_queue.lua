@@ -16,17 +16,24 @@ function startSkillQueue()
     -- testQueue:addSkillToQueue("wh_main_skill_all_all_self_hard_to_hit");
 end
 
-core:add_listener(
-    "SkillQueueStartListener",
-    "FirstTickAfterWorldCreated",
-    function(context)
-        return true;
-    end,
-    function(context)
-        startSkillQueue();
-    end,
-    true
-);
+-- core:add_listener(
+--     "SkillQueueStartListener",
+--     "FirstTickAfterWorldCreated",
+--     function(context)
+--         return true;
+--     end,
+--     function(context)
+--         out("skill queue started");
+--         startSkillQueue();
+--     end,
+--     true
+-- );
+
+cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = 
+function(context)
+    out("skill queue started");
+    startSkillQueue();
+end
 
 -- core:add_listener(
 --     "SkillQueuePanelListener",
