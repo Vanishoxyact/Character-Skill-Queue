@@ -1,4 +1,4 @@
-local CharacterSkillQueue = require("character_skill_queue");
+local CharacterSkillQueue = my_load_mod_script("character_skill_queue");
 local SkillQueueModel = {} --# assume SkillQueueModel: SKILL_QUEUE_MODEL
 SkillQueueModel.__index = SkillQueueModel;
 SkillQueueModel.characterSkillQueues = {} --: map<CA_CQI, CHARACTER_SKILL_QUEUE>

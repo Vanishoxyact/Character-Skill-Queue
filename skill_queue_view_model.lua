@@ -1,4 +1,4 @@
-local QueuedSkill = require("queued_skill");
+local QueuedSkill = my_load_mod_script("queued_skill");
 local SkillQueueViewModel = {} --# assume SkillQueueViewModel: SKILL_QUEUE_VIEW_MODEL
 SkillQueueViewModel.__index = SkillQueueViewModel;
 SkillQueueViewModel.skillQueueWidth = 345;

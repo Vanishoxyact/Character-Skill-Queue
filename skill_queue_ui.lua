@@ -1,7 +1,7 @@
-local SkillQueueViewModel = require("skill_queue_view_model")
-local QueuedSkillContainer = require("queued_skill_container")
-local SkillValidator = require("skill_validator")
-local SkillQueuer = require("skill_queuer")
+local SkillQueueViewModel = my_load_mod_script("skill_queue_view_model")
+local QueuedSkillContainer = my_load_mod_script("queued_skill_container")
+local SkillValidator = my_load_mod_script("skill_validator")
+local SkillQueuer = my_load_mod_script("skill_queuer")
 local SkillQueueUi = {} --# assume SkillQueueUi: SKILL_QUEUE_UI
 SkillQueueUi.__index = SkillQueueUi;
 SkillQueueUi.viewModel = nil --: SKILL_QUEUE_VIEW_MODEL

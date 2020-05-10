@@ -1,4 +1,4 @@
-local SkillQueueModel = require("skill_queue_model");
+local SkillQueueModel = my_load_mod_script("skill_queue_model");
 local SkillQueueManager = {} --# assume SkillQueueManager: SKILL_QUEUE_MANAGER
 SkillQueueManager.__index = SkillQueueManager;
 SkillQueueManager.characterRanks = {} --: map<CA_CQI, integer>

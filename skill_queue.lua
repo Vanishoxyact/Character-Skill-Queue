@@ -1,6 +1,6 @@
-require("skill_queue_util");
-local SkillQueueManager = require("skill_queue_manager");
-local SkillQueueUi = require("skill_queue_ui");
+my_load_mod_script("skill_queue_util");
+local SkillQueueManager = my_load_mod_script("skill_queue_manager");
+local SkillQueueUi = my_load_mod_script("skill_queue_ui");
 local currentUi = nil --: SKILL_QUEUE_UI
 local skillQueueManager = nil --: SKILL_QUEUE_MANAGER
 
