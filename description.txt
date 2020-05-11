@@ -1,0 +1,27 @@
+This mod adds a new option to the skill panel to allow you to queue up skills, so that your lords and heroes can level up automatically. When a lord or hero levels up, if it has a skill queued it will be automatically selected. This mod is aimed for the mid/late game to try and reduce some of the micro-management of lots of lords and heroes.
+
+This initial version of the mod allows you to select any skills to queue, however the skill will not be applied if the requirements are not met (you will be left will a skill point instead). Validation of the selected skills will be added at a later date.
+
+To queue up skills select a lord or hero and head to the skill page. Note that if you have any remaining skill points, these need to be spent before any skills can be queued (the button will remain greyed out). Click the "Queue Skills" button on the top right of the page. This will show any skills which are currently queued. To add new skills, click the "Select Skills" button at the bottom of the new panel, and then simply click on the skills in the main skill panel to queue them up.
+
+FAQ
+Q. Is this mod savegame compatible?
+A. The mod can be enabled for any existing savegame and should not cause any issues.
+
+Q. I can't see the button to queue skills.
+A. This is most likely due to missing the dependant mods, UI Modding Framework. This may also be due to another mod causing the scripts to crash, which in turn affects this one.
+
+Q. Is this mod compatible with ***?
+A. The mod is designed to be as compatible as possible. The mod is mainly script driven which means very few conflicts should occur. Where compatibility issues do occur, the custom table loader should allow the issues to be resolved fairly easily by the author of the other mod.
+
+Q. Will this mod work in multiplayer?
+A. Unfortunately not. I will look at updating this in the future.
+
+Enjoy!
+
+[img=https://c4.patreon.com/favicons/favicon-96x96.png][/img]
+[url=https://www.patreon.com/vanishoxyact]Vanishoxyact's Patreon[/url]
+Creating and supporting a mod as complex as this takes huge amounts of time. If you would like to support me, please consider becoming a Patreon! From this you will have access to the up-and-coming features and early access betas.
+
+Alternatively, if you would like to donate, it would be highly appreciated!
+https://www.paypal.me/twvanish
