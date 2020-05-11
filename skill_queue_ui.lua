@@ -159,7 +159,7 @@ function SkillQueueUi.markSelectedSkills(self)
             skillRankUic:SetOpacity(150);
             table.insert(self.markedSkills, skillRankUic);
             local skillLabel = Text.new("markedSkillLabel" .. i, skillRankUic, "NORMAL", tostring(i));
-            skillLabel:Resize(12, 12);
+            skillLabel:Resize(18, 12);
             local skillRankUicW, skillRankUicH = skillRankUic:Bounds();
             skillLabel:PositionRelativeTo(skillRankUic, skillRankUicW, skillRankUicH/2);
             table.insert(self.markedSkillLabels, skillLabel);

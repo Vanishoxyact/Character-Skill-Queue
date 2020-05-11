@@ -30,7 +30,7 @@ function QueuedSkillContainer.createCharacterRankContainer(self)
         rankString = " " .. rankString;
     end
     local characterRankNumber = Text.new("QueuedSkillContainercharacterRankNumber" .. queuedSkill.id, self.parentPanel, "NORMAL", rankString);
-    characterRankNumber:Resize(10, 10);
+    characterRankNumber:Resize(15, 10);
 
     local textOffsetFromTop = characterRankFrame:Height() /2 - characterRankNumber:Height() / 2;
     characterRankContainer:AddGap((characterRankFrame:Height() * -1) + textOffsetFromTop);
