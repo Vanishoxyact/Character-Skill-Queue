@@ -57,7 +57,7 @@ end
 --v function(callback: function(selectedChar: CA_CHAR))
 function applyFunctionWhenCharSelected(callback)
     core:add_listener(
-        "CustomLordsSkillHider",
+        "SkillQueueSkillHider",
         "PanelOpenedCampaign",
         function(context) 
             return context.string == "character_details_panel"; 
@@ -72,7 +72,7 @@ function applyFunctionWhenCharSelected(callback)
     );
     
     core:add_listener(
-        "CustomLordButtonEnableCharacterChangeListener",
+        "SkillQueueButtonEnableCharacterChangeListener",
         "CharacterSelected",
         function()
             return true;
@@ -91,16 +91,16 @@ function applyFunctionWhenCharSelected(callback)
     );
 end
 
-core:add_listener(
-    "AddXpToChar",
-    "ShortcutTriggered",
-    function(context) return context.string == "camera_bookmark_view2"; end, --default F11
-    function(context)
-        local charCqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
-        cm:add_agent_experience(cm:char_lookup_str(charCqi), 5000);
-    end,
-    true
-);
+--core:add_listener(
+--    "AddXpToChar",
+--    "ShortcutTriggered",
+--    function(context) return context.string == "camera_bookmark_view2"; end, --default F11
+--    function(context)
+--        local charCqi = cm:get_campaign_ui_manager():get_char_selected_cqi();
+--        cm:add_agent_experience(cm:char_lookup_str(charCqi), 5000);
+--    end,
+--    true
+--);
 
 --v function(list: vector<WHATEVER>, value: WHATEVER) --> boolean
 function listContains(list, value)
