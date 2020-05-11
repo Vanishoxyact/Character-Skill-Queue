@@ -11,7 +11,6 @@ function calculateIndexOfSelectedAgent()
             end
         end
     end
-    out("Selected agent not found");
     return nil;
 end
 
