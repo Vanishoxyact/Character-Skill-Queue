@@ -28,6 +28,11 @@ applyFunctionWhenCharSelected(
         if not currentUi then
             cm:callback(
                 function()
+                   if not find_uicomponent(core:get_ui_root(), "character_details_panel") then
+                      out("UI closed since char selected");
+                      currentChar = nil;
+                      return;
+                   end
                     out("Init skill queue");
                     currentUi = SkillQueueUi.new(skillQueueManager.model:getOrCreateCharacterSkillQueue(selectedChar));
                 end, 0, "SkillQueueUiCreator"
@@ -49,8 +54,8 @@ core:add_listener(
         if currentUi then
             currentUi:panelClosed(false);
             currentUi = nil;
-            currentChar = nil;
         end
+       currentChar = nil;
     end, 
     true
 );
