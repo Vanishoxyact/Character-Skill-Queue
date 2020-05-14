@@ -67,6 +67,9 @@ function SkillQueueManager.registerForCharRankUp(self)
             local rankedUpChar = context:character();
             local rankDiff = rankedUpChar:rank() - self.characterRanks[rankedUpChar:cqi()];
             self.characterRanks[rankedUpChar:cqi()] = rankedUpChar:rank();
+            if VANISH_SKILL_POINT_MULTIPLIER then
+                rankDiff = rankDiff * VANISH_SKILL_POINT_MULTIPLIER;
+            end
             self:processCharRankedUp(rankedUpChar, rankDiff);
         end,
         true

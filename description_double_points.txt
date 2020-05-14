@@ -1,0 +1,8 @@
+This mod adapts the Character Skill Queue mod (found [url=https://steamcommunity.com/sharedfiles/filedetails/?id=2093326036]here[/url]) to work when using mods which give two skill points per level up. Note that this mod does nothing on its own, and the main Character Skill Queue mod is required.
+
+[img=https://c4.patreon.com/favicons/favicon-96x96.png][/img]
+[url=https://www.patreon.com/vanishoxyact]Vanishoxyact's Patreon[/url]
+Creating and supporting a mod as complex as this takes huge amounts of time. If you would like to support me, please consider becoming a Patreon! From this you will have access to the up-and-coming features and early access betas.
+
+Alternatively, if you would like to donate, it would be highly appreciated!
+https://www.paypal.me/twvanish

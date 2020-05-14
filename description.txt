@@ -4,6 +4,10 @@ This initial version of the mod allows you to select any skills to queue, howeve
 
 To queue up skills select a lord or hero and head to the skill page. Note that if you have any remaining skill points, these need to be spent before any skills can be queued (the button will remain greyed out). Click the "Queue Skills" button on the top right of the page. This will show any skills which are currently queued. To add new skills, click the "Select Skills" button at the bottom of the new panel, and then simply click on the skills in the main skill panel to queue them up.
 
+If you are using a mod which changes how many skill points are received per level, you will also need an adjustment mod (found below) to ensure that all the skill points are spent each level up. Only use an adjustment mod if you need it!
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2096570887]X2 Skill Points[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=2096570947]X3 Skill Points[/url]
+
 FAQ
 Q. Is this mod savegame compatible?
 A. The mod can be enabled for any existing savegame and should not cause any issues.
