@@ -1,3 +1,4 @@
+my_load_mod_script("skill_queue_table_loading");
 my_load_mod_script("skill_queue_util");
 local SkillQueueManager = my_load_mod_script("skill_queue_manager");
 local SkillQueueUi = my_load_mod_script("skill_queue_ui");
@@ -11,6 +12,7 @@ end
 
 cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = 
 function(context)
+   skillQueueLoadTables();
     startSkillQueue();
 end
 

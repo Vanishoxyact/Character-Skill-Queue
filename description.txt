@@ -23,6 +23,11 @@ A. Unfortunately not. I will look at updating this in the future.
 
 Enjoy!
 
+Updates
+-----
+Fixed an issue where mounts were not being awarded if the skill was obtained via the skill queue. Note that mounts added from other mods may not work correctly however.
+-----
+
 [img=https://c4.patreon.com/favicons/favicon-96x96.png][/img]
 [url=https://www.patreon.com/vanishoxyact]Vanishoxyact's Patreon[/url]
 Creating and supporting a mod as complex as this takes huge amounts of time. If you would like to support me, please consider becoming a Patreon! From this you will have access to the up-and-coming features and early access betas.

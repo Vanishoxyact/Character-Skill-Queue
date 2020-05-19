@@ -7,18 +7,6 @@ SkillQueueManager.model = nil --: SKILL_QUEUE_MODEL
 --v function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, skill: string, successCallback: function())
 function SkillQueueManager.allocateSkill(self, character, skill, successCallback)
     local skillAllocated = false;
-    cm:callback(
-        function()
-            core:remove_listener("SkillAllocationDetector");
-            if not skillAllocated then
-                out("Failed to allocate skill: " .. skill);
-            else
-                out("Skill allocated");
-                self.model:getSkillQueueForCharacter(character):skilledInto(skill);
-                successCallback();
-            end
-        end, 0, "SkillAllocationCallback"
-    );
     core:add_listener(
         "SkillAllocationDetector",
         "CharacterSkillPointAllocated",
@@ -31,6 +19,25 @@ function SkillQueueManager.allocateSkill(self, character, skill, successCallback
         true
     );
     cm:force_add_skill("character_cqi:" .. tonumber(character:cqi()), skill);
+    cm:callback(
+          function()
+              core:remove_listener("SkillAllocationDetector");
+              if not skillAllocated then
+                  out("Failed to allocate skill: " .. skill);
+              else
+                  out("Skill allocated");
+                  self.model:getSkillQueueForCharacter(character):skilledInto(skill);
+                  local ancillaryFromSkillTable = SKILL_QUEUE_TABLES["ancillaries_required_skills_tables"][skill];
+                  if ancillaryFromSkillTable then
+                      local ancillary = ancillaryFromSkillTable["ancillary"]
+                      out("force add ancillary from skill:" .. ancillary);
+                      local resolvedChar = cm:get_character_by_cqi(50);
+                      cm:force_add_ancillary(resolvedChar, ancillary, true, false)
+                  end
+                  successCallback();
+              end
+          end, 0.5, "SkillAllocationCallback"
+    );
 end
 
 --# assume SKILL_QUEUE_MANAGER.processCharRankedUp: function(self: SKILL_QUEUE_MANAGER, character: CA_CHAR, ranks: integer)
