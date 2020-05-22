@@ -27,12 +27,11 @@ function SkillQueueManager.allocateSkill(self, character, skill, successCallback
               else
                   out("Skill allocated");
                   self.model:getSkillQueueForCharacter(character):skilledInto(skill);
-                  local ancillaryFromSkillTable = SKILL_QUEUE_TABLES["ancillaries_required_skills_tables"][skill];
+                  local ancillaryFromSkillTable = SKILL_QUEUE_TABLES["character_skill_level_to_ancillaries_junctions_tables"][skill];
                   if ancillaryFromSkillTable then
-                      local ancillary = ancillaryFromSkillTable["ancillary"]
+                      local ancillary = ancillaryFromSkillTable["granted_ancillary"]
                       out("force add ancillary from skill:" .. ancillary);
-                      local resolvedChar = cm:get_character_by_cqi(50);
-                      cm:force_add_ancillary(resolvedChar, ancillary, true, false)
+                      cm:force_add_ancillary(character, ancillary, true, false)
                   end
                   successCallback();
               end
